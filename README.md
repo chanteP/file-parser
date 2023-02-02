@@ -1,7 +1,9 @@
 # 自用 file parser
 
 ```js
-new Parser().add(file).format('apng').parse();
+import { Parser, APNG } from 'xxx';
+
+new Parser().add(file).format(APNG).parse();
 
 new Parser().add(file).format`
 #header
