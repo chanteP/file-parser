@@ -1,0 +1,20 @@
+{
+  "name": "np-file-parser",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/chanteP/file-parser.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/chanteP/file-parser/issues"
+  },
+  "homepage": "https://github.com/chanteP/file-parser#readme"
+}
