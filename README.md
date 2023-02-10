@@ -29,13 +29,28 @@ fieldName, length, dataFormat
 fieldName, >length, dataFormat
 fieldName, <length, dataFormat
 
-${fieldValueWithDataFormat}
+fieldName, [offsetStart, offsetEnd]
+fieldName, length, dataFormat | dataFormat
 
-while(matchData)# group
-if(data, equalValue)# group
-loop(count)# group
+\${fieldValueWithDataFormat}
+\${fieldValueWithDataFormat + offset}
+\${fieldValueWithDataFormat - offset}
 
-[repeatCount]fieldName, ...
+while(byteValue)# group
+if(var, matchData)# group
+loop(numberValue)# group
 
+back(numberValue)
+next(numberValue)
+goto(numberValue)
+find(byteValue)
+backFind(byteValue)
+
+stringValue: 'string' "string"
+byteValue: [00 0F AF]
+numberValue: 123
+
+// comment
+/* comment */
 
 ```

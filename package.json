@@ -16,5 +16,8 @@
   "bugs": {
     "url": "https://github.com/chanteP/file-parser/issues"
   },
-  "homepage": "https://github.com/chanteP/file-parser#readme"
+  "homepage": "https://github.com/chanteP/file-parser#readme",
+  "dependencies": {
+    "antlr4": "^4.12.0-beta.4"
+  }
 }
