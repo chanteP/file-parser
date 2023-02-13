@@ -4,15 +4,15 @@ grammar FileDesc;
  * Parser Rules
  */
 
-file: line*;
+file: NEWLINE? fileData? EOF;
 
-line: (groupLine | fieldLine | commandLine) NEWLINE;
+fileData: line (NEWLINE line)*;
+
+line: fieldLine | commandLine | groupLine;
 
 groupLine: groupCommandExpr? GROUP_MARK .*?;
-fieldLine
-    : VAR PART_SPLIT offsetExpr
-    | VAR PART_SPLIT offsetExpr PART_SPLIT dataFormatExpr
-    ;
+fieldLine: VAR PART_SPLIT offsetExpr (PART_SPLIT dataFormatExpr)?;
+
 commandLine
     : backCommand
     | nextCommand
@@ -30,7 +30,7 @@ whileCommand: WHILE '(' multiByteValue ')';
 findCommand: FIND '(' multiByteValue ')';
 backFindCommand: BACKFIND '(' multiByteValue ')';
 
-ifCommand: IF '(' VAR ',' matchDataExpr ')';
+ifCommand: IF '(' VAR 'is' multiMatchDataValue ')';
 loopCommand: LOOP '(' numberValue ')';
 
 backCommand: BACK '(' numberValue ')';
@@ -40,12 +40,13 @@ nextCommand: NEXT '(' numberValue ')';
 // base value expression ---------------------------------
 numberValue: varExpr | NUMBER;
 multiByteValue: byteValue ('|' byteValue)*;
+multiMatchDataValue: matchDataExpr ('|' matchDataExpr)*;
 byteValue: varExpr | BYTE_VALUE;
 matchDataExpr: BYTE_VALUE | DATA_STRING | NUMBER;
 
 offsetExpr
-    : varExpr
-    | '[' varExpr ',' varExpr ']'
+    : numberValue
+    | '[' numberValue ',' numberValue ']'
     | ('>' | '<') offsetExpr
     ;
 dataFormatExpr: VAR ('|' VAR)*;
@@ -98,8 +99,8 @@ NEWLINE: ('\r'? '\n' | '\r')+;
 
 // value --------------------
 DATA_STRING:
-    '"' ALL_LETTER '"'
-    | '\'' ALL_LETTER '\''
+    '"' ALL_LETTER* '"'
+    | '\'' ALL_LETTER* '\''
     ;
 BYTE_VALUE: '[' (HEX HEX)+ ']';
 NUMBER: DIGIT+ ('.' DIGIT+)?;

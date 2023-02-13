@@ -2,25 +2,26 @@ import antlr4 from 'antlr4';
 
 import { FileData } from './FileData';
 import FileDescLexer from './grammar/FileDescLexer';
-import FileDescParser from './grammar/FileDescParser';
 import FileDescVisitor from './grammar/FileDescVisitor';
+import FileDescParser from './grammar/FileDescParser';
 
-const input = `
-    #fasdf
-`;
+export function parse(fileFormat: string, file?: File) {
+    const chars = new antlr4.InputStream(fileFormat);
+    const lexer = new FileDescLexer(chars);
+    const tokens = new antlr4.CommonTokenStream(lexer);
+    const parser = new FileDescParser(tokens);
+    // parser.buildParseTrees = true;
 
-const chars = new antlr4.InputStream(input);
-const lexer = new FileDescLexer(chars);
-const tokens = new antlr4.CommonTokenStream(lexer);
-const parser = new FileDescParser(tokens);
-// parser.buildParseTrees = true;
+    const tree = parser.file();
 
-const tree = parser.file();
+    const data = new FileData();
+    data.setFile(file);
 
-const { AddContext, AssignContext, IntContext, PrimContext } = FileDescParser;
+    console.log('tokens', tokens.tokens.map(t => t.text));
+    console.log('tree', tree, tree.children[1].children.map(t => t.getText()));
 
-const data = new FileData();
+    tree.accept(new FileDescVisitor(data));
 
-tree.accept(new FileDescVisitor(data));
-
-console.log(data);
+    console.log(data);
+    return data;
+}

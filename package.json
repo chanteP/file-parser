@@ -4,7 +4,8 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build:grammar": "antlr4js ./FileDesc.g4 -o ./src/grammar && tsx ./buildGrammar.ts" 
   },
   "repository": {
     "type": "git",
