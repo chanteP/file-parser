@@ -12,7 +12,7 @@ export function parse(fileFormat: string, file?: File) {
     const parser = new FileDescParser(tokens);
     // parser.buildParseTrees = true;
 
-    const tree = parser.file();
+    const tree = parser.program();
 
     const data = new FileData();
     data.setFile(file);

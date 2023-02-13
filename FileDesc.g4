@@ -4,7 +4,7 @@ grammar FileDesc;
  * Parser Rules
  */
 
-file: NEWLINE? fileData? EOF;
+program: NEWLINE? fileData? EOF;
 
 fileData: line (NEWLINE line)*;
 
@@ -16,7 +16,6 @@ fieldLine: VAR PART_SPLIT offsetExpr (PART_SPLIT dataFormatExpr)?;
 commandLine
     : backCommand
     | nextCommand
-    | gotoCommand
     | gotoCommand
     | findCommand
     | backFindCommand
