@@ -4,7 +4,7 @@ grammar FileDesc;
  parser ------------------------------------------
  */
 
-program: NEWLINE? fileData? EOF;
+program: NEWLINE? fileData? NEWLINE? EOF;
 
 fileData: line (NEWLINE line)*;
 

@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "build:grammar": "antlr4js ./FileDesc.g4 -o ./src/grammar && tsx ./buildGrammar.ts" 
+    "build:grammar": "antlr4js ./FileDesc.g4 -o ./src/grammar && tsx ./buildGrammar.ts"
   },
   "repository": {
     "type": "git",
@@ -22,6 +22,7 @@
     "antlr4": "4.11"
   },
   "devDependencies": {
+    "@types/antlr4": "^4.11.2",
     "tsx": "^3.12.3"
   }
 }

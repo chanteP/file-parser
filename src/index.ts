@@ -17,10 +17,10 @@ length,4
 chunkLength, 4, number
 chunkType, 4, string
 
-if(chunkType, 'JSON') ## json
+if(chunkType is 'JSON') ## json
 data,\${chunkLength}, string
 
-if(chunkType, 'BIN') ## bin
+if(chunkType is 'BIN') ## bin
 data,\${chunkLength}
 
 `;

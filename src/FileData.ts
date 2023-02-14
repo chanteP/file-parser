@@ -1,10 +1,11 @@
 export interface GroupRecord {
     type: 'group';
     level: number;
-    name: string;
+    name: () => string;
     content: FileRecords[];
-    optional?: boolean;
-    loop?: boolean;
+
+    optional?: () => boolean;
+    loop?: () => boolean;
 }
 
 export enum DataOrder {
@@ -14,20 +15,21 @@ export enum DataOrder {
 
 export interface FieldRecord {
     type: 'field';
-    name: string;
-    offset: number;
-    length: number;
+    name: () => string;
+    offset: () => number;
+    length: () => number;
+    shouldMove: boolean;
     order: DataOrder;
-    data: ArrayBuffer;
-    value: string | number | ArrayBuffer;
+    data: () => Blob | null;
     formatter: string[];
-
-    offsetString?: string;
-    lengthString?: string;
-    endString?: string;
 }
 
-type FileRecords = GroupRecord | FieldRecord;
+export interface CommandRecord {
+    type: 'command';
+    exec: () => void;
+}
+
+type FileRecords = GroupRecord | FieldRecord | CommandRecord;
 export type FieldValue = string | number | ArrayBuffer | null | undefined;
 
 export type DataFormatter = (data: FieldValue) => FieldValue;
@@ -62,7 +64,7 @@ export class FileData {
     }
 
     // record ------------------------------------------------------------
-    private addRecord(record: GroupRecord | FieldRecord) {
+    private addRecord(record: FileRecords) {
         const scope = this.currentScope;
         if (scope) {
             scope.content.push(record);
@@ -71,28 +73,27 @@ export class FileData {
         }
     }
 
-    push(record: GroupRecord | FieldRecord) {
+    push(record: FileRecords) {
         if (record.type === 'group') {
             this.popTo(record.level);
             this.addRecord(record);
             this.groupStack.push(record);
             return;
         }
-        if (record.type === 'field') {
-            this.addRecord(record);
-            const value = record.data;
-            this.VO.set(record.name, value);
-            return;
-        }
+        this.addRecord(record);
     }
 
     // data operation --------------------------------------------------
-    hasFile(){
-
+    hasFile() {
+        return !!this.file;
     }
 
     setFile(file?: File) {
         this.file = file;
+    }
+
+    parse() {
+        // TODO
     }
 
     getData(start: number, end: number) {
