@@ -32,4 +32,4 @@ data,\${chunkLength}
 
 const rs = parse(fileFormat);
 
-console.log(rs);
+console.log('final----', rs);

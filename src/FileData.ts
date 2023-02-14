@@ -5,7 +5,7 @@ export interface GroupRecord {
     content: FileRecords[];
 
     optional?: () => boolean;
-    loop?: () => boolean;
+    loop?: (count: number) => boolean;
 }
 
 export enum DataOrder {
@@ -15,18 +15,18 @@ export enum DataOrder {
 
 export interface FieldRecord {
     type: 'field';
-    name: () => string;
+    name: string;
     offset: () => number;
     length: () => number;
+    data: () => Blob | null;
     shouldMove: boolean;
     order: DataOrder;
-    data: () => Blob | null;
     formatter: string[];
 }
 
 export interface CommandRecord {
     type: 'command';
-    exec: () => void;
+    exec: (count: number) => void;
 }
 
 type FileRecords = GroupRecord | FieldRecord | CommandRecord;
@@ -92,8 +92,29 @@ export class FileData {
         this.file = file;
     }
 
-    parse() {
-        // TODO
+    exec(list: FileRecords[] = this.data) {
+        return list.map((line) => {
+            if (line.type === 'group') {
+                return {
+                    ...line,
+                    name: line.name(),
+                    content: this.exec(line.content),
+                };
+            }
+            if (line.type === 'field') {
+                return {
+                    ...line,
+                    value: this.pipeDataFormatter(line.data(), line.formatter),
+                    offset: line.offset(),
+                    length: line.length(),
+                };
+            }
+            if (line.type === 'command') {
+                return {
+                    ...line,
+                };
+            }
+        });
     }
 
     getData(start: number, end: number) {
@@ -103,7 +124,7 @@ export class FileData {
         return this.file.slice(start, end);
     }
 
-    pipeDataFormatter(data: FieldValue, dataFormatterKeys: string[]) {
+    pipeDataFormatter(data: Blob | null, dataFormatterKeys: string[]) {
         let rs = data;
         dataFormatterKeys.forEach((key) => {
             const formatter = dataFormatterMap.get(key);

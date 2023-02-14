@@ -2,7 +2,7 @@
 // jshint ignore: start
 import antlr4 from 'antlr4';
 
-import { DataOrder, FieldRecord, FileData, GroupRecord } from '../FileData';
+import { DataOrder, FieldRecord, FieldValue, FileData, GroupRecord } from '../FileData';
 import { SyntaxException } from '../exception';
 import {
     ProgramContext,
@@ -32,6 +32,7 @@ import {
     StringValueContext,
     CalcExprContext,
 } from './FileDescParser';
+import { getValueFromExpr, packValueOfFunction } from '../utils';
 
 // This class defines a complete generic visitor for a parse tree produced by FileDescParser.
 
@@ -261,22 +262,22 @@ export default class FileDescVisitor extends antlr4.tree.ParseTreeVisitor {
 
     // Visit a parse tree produced by FileDescParser#textValue.
     visitTextValue(ctx: TextValueContext) {
-        return this.visitChildren(ctx).join(' ');
+        return this.visitChildren(ctx).map(getValueFromExpr).join(' ');
     }
 
     // Visit a parse tree produced by FileDescParser#stringValue.
     visitStringValue(ctx: StringValueContext) {
-        return this.visitChildren(ctx);
+        return this.visitChildren(ctx).map(getValueFromExpr).join(' ');
     }
 
     // Visit a parse tree produced by FileDescParser#calcExpr.
-    visitCalcExpr(ctx: CalcExprContext) {
+    visitCalcExpr(ctx: CalcExprContext): () => FieldValue {
         if (ctx.children.length === 1) {
             const data = ctx.children[0].getText();
             if (isNaN(data)) {
-                return this.file.getVar(data);
+                return packValueOfFunction(() => this.file.getVar(data));
             }
-            return data;
+            return packValueOfFunction(() => data);
         }
         const rs = this.visitChildren(ctx);
         if (rs[0] === '(') {
@@ -285,13 +286,13 @@ export default class FileDescVisitor extends antlr4.tree.ParseTreeVisitor {
         const [l, o, r] = rs;
         switch (o) {
             case '*':
-                return +l * +r;
+                return packValueOfFunction(() => +l * +r);
             case '/':
-                return +l / +r;
+                return packValueOfFunction(() => +l / +r);
             case '+':
-                return +l + +r;
+                return packValueOfFunction(() => +l + +r);
             case '-':
-                return +l - +r;
+                return packValueOfFunction(() => +l - +r);
         }
         throw new SyntaxException(`unknown operation ${o}`);
     }

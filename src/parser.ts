@@ -16,12 +16,12 @@ export function parse(fileFormat: string, file?: File) {
 
     const data = new FileData();
     data.setFile(file);
-
+    
     console.log('tokens', tokens.tokens.map(t => t.text));
     console.log('tree', tree, tree.children[1].children.map(t => t.getText()));
 
     tree.accept(new FileDescVisitor(data));
-
+    
     console.log(data);
-    return data;
+    return data.exec();
 }
