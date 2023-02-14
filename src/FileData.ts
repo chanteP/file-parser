@@ -28,7 +28,7 @@ export interface FieldRecord {
 }
 
 type FileRecords = GroupRecord | FieldRecord;
-export type FieldValue = string | number | ArrayBuffer | null;
+export type FieldValue = string | number | ArrayBuffer | null | undefined;
 
 export type DataFormatter = (data: FieldValue) => FieldValue;
 

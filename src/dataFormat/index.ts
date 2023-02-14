@@ -1,9 +1,9 @@
 import type { DataFormatter, FieldValue } from '../FileData';
 
 export function toString(data: FieldValue) {
-    return data?.toString();
+    return data?.toString() ?? '';
 }
 
 export function toNumber(data: FieldValue) {
-    return Number(data);
+    return Number(data) ?? 0;
 }

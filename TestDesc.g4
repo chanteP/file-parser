@@ -3,14 +3,13 @@ grammar FileDesc;
 /**
  parser ------------------------------------------
  */
-
 program: NEWLINE? fileData? EOF;
 
 fileData: line (NEWLINE line)*;
 
 line: fieldLine | commandLine | groupLine;
 
-groupLine: groupCommandExpr? GROUP_MARK textValue?;
+groupLine: groupCommandExpr? GROUP_MARK stringValue?;
 fieldLine:
 	VAR PART_SPLIT offsetExpr (PART_SPLIT dataFormatExpr)?;
 
@@ -38,7 +37,7 @@ nextCommand: NEXT '(' numberValue ')';
 // basic expression ---------------------------------
 multiByteValue: byteValue ('|' byteValue)*;
 multiMatchDataValue: matchDataExpr ('|' matchDataExpr)*;
-matchDataExpr: BYTE_VALUE | STRING | NUMBER;
+matchDataExpr: BYTE_VALUE | DATA_STRING | NUMBER;
 
 offsetExpr: ('>' | '<')? (
 		numberValue
@@ -48,7 +47,6 @@ offsetExpr: ('>' | '<')? (
 dataFormatExpr: VAR ('|' VAR)*;
 
 // basic value ---------------------------------
-textValue: (varExpr | VAR | NUMBER | STRING)+;
 stringValue: (varExpr | VAR)+;
 numberValue: varExpr | NUMBER;
 byteValue: varExpr | BYTE_VALUE;
@@ -93,10 +91,10 @@ MINUS: '-';
 PART_SPLIT: ',';
 GROUP_MARK: '#'+;
 
-NEWLINE: ('\r'? '\n' | '\r')+;
+NEWLINE: ('\r'? '\n' | '\r')+ -> popMode;
 
 // value --------------------
-STRING: '"' .*? '"' | '\'' .*? '\'';
+DATA_STRING: '"' .*? '"' | '\'' .*? '\'';
 
 BYTE_VALUE: '[' (HEX HEX)+ ']';
 NUMBER: DIGIT+ ('.' DIGIT+)?;

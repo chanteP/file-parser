@@ -1,7 +1,9 @@
 // Generated from java-escape by ANTLR 4.11.1
 // jshint ignore: start
 import antlr4 from 'antlr4';
+
 import { DataOrder, FieldRecord, FileData, GroupRecord } from '../FileData';
+import { SyntaxException } from '../exception';
 import FileDescParser from './FileDescParser';
 
 // This class defines a complete generic visitor for a parse tree produced by FileDescParser.
@@ -15,16 +17,8 @@ export default class FileDescVisitor extends antlr4.tree.ParseTreeVisitor {
         this.data = fileData;
     }
 
-    visitTerminal(ctx) {
-        return ctx.getText();
-    }
-
     // Visit a parse tree produced by FileDescParser#file.
-    visitFile(ctx) {
-        return this.visitChildren(ctx);
-    }
-
-    visitTest(ctx) {
+    visitProgram(ctx) {
         return this.visitChildren(ctx);
     }
 
@@ -32,6 +26,7 @@ export default class FileDescVisitor extends antlr4.tree.ParseTreeVisitor {
     visitFileData(ctx) {
         return this.visitChildren(ctx);
     }
+    // line ----------------------------------------------------------------
 
     // Visit a parse tree produced by FileDescParser#line.
     visitLine(ctx) {
@@ -85,6 +80,8 @@ export default class FileDescVisitor extends antlr4.tree.ParseTreeVisitor {
 
         console.log('field---', ctx.getText(), fieldData);
     }
+
+    // command ----------------------------------------------------------------
 
     // Visit a parse tree produced by FileDescParser#commandLine.
     visitCommandLine(ctx) {
@@ -140,14 +137,7 @@ export default class FileDescVisitor extends antlr4.tree.ParseTreeVisitor {
         return this.visitChildren(ctx);
     }
 
-    // Visit a parse tree produced by FileDescParser#numberValue.
-    visitNumberValue(ctx) {
-        const template = ctx.children[0].getText();
-        if (!isNaN(template)) {
-            return +template;
-        }
-        return this.visitChildren(ctx);
-    }
+    // value expression ----------------------------------------------------------------
 
     // Visit a parse tree produced by FileDescParser#multiByteValue.
     visitMultiByteValue(ctx) {
@@ -156,11 +146,6 @@ export default class FileDescVisitor extends antlr4.tree.ParseTreeVisitor {
 
     // Visit a parse tree produced by FileDescParser#multiMatchDataValue.
     visitMultiMatchDataValue(ctx) {
-        return this.visitChildren(ctx);
-    }
-
-    // Visit a parse tree produced by FileDescParser#byteValue.
-    visitByteValue(ctx) {
         return this.visitChildren(ctx);
     }
 
@@ -203,9 +188,44 @@ export default class FileDescVisitor extends antlr4.tree.ParseTreeVisitor {
         return this.visitChildren(ctx);
     }
 
+    // basic value ----------------------------------------------------------------
+
+    visitTerminal(ctx) {
+        return ctx.getText();
+    }
+
+    // Visit a parse tree produced by FileDescParser#numberValue.
+    visitNumberValue(ctx) {
+        const template = ctx.children[0].getText();
+        if (!isNaN(template)) {
+            return +template;
+        }
+        return this.visitChildren(ctx);
+    }
+
+    // Visit a parse tree produced by FileDescParser#byteValue.
+    visitByteValue(ctx) {
+        if (ctx.children[0].getText === '[') {
+            const valueList = this.visitChildren(ctx).slice(1, -1);
+            // TODO
+            return valueList;
+        }
+        return this.visitChildren(ctx)[0];
+    }
+
     // Visit a parse tree produced by FileDescParser#varExpr.
     visitVarExpr(ctx) {
         return this.visitChildren(ctx)[1];
+    }
+
+    // Visit a parse tree produced by FileDescParser#textValue.
+    visitTextValue(ctx) {
+        return this.visitChildren(ctx).join(' ');
+    }
+
+    // Visit a parse tree produced by FileDescParser#stringValue.
+    visitStringValue(ctx) {
+        return this.visitChildren(ctx);
     }
 
     // Visit a parse tree produced by FileDescParser#calcExpr.
@@ -215,8 +235,23 @@ export default class FileDescVisitor extends antlr4.tree.ParseTreeVisitor {
             if (isNaN(data)) {
                 return this.data.getVar(data);
             }
-            return +data;
+            return data;
         }
-        return this.visitChildren(ctx);
+        const rs = this.visitChildren(ctx);
+        if (rs[0] === '(') {
+            return rs[1];
+        }
+        const [l, o, r] = rs;
+        switch (o) {
+            case '*':
+                return +l * +r;
+            case '/':
+                return +l / +r;
+            case '+':
+                return +l + +r;
+            case '-':
+                return +l - +r;
+        }
+        throw new SyntaxException(`unknown operation ${o}`);
     }
 }
