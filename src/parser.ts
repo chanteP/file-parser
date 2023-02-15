@@ -6,30 +6,27 @@ import FileDescVisitor from './grammar/FileDescVisitor';
 import FileDescParser from './grammar/FileDescParser';
 
 export async function parse(fileFormat: string, file?: File) {
+    console.time('tokenize');
     const chars = new antlr4.InputStream(fileFormat);
     const lexer = new FileDescLexer(chars);
     const tokens = new antlr4.CommonTokenStream(lexer);
+    console.timeEnd('tokenize');
+
+    console.time('parse');
     const parser = new FileDescParser(tokens);
     // parser.buildParseTrees = true;
 
     const tree = parser.program();
+    console.timeEnd('parse');
 
+    console.time('emit');
     const data = new FileData();
     data.setFile(file);
-
-    console.log(
-        'tokens',
-        tokens.tokens.map((t) => t.text),
-    );
-    console.log(
-        'tree',
-        tree,
-        tree.children[1].children.map((t) => t.getText()),
-    );
 
     tree.accept(new FileDescVisitor(data));
 
     await data.ready;
+    console.timeEnd('emit');
 
     return data;
 }

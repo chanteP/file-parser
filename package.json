@@ -23,6 +23,7 @@
   },
   "devDependencies": {
     "@types/antlr4": "^4.11.2",
-    "tsx": "^3.12.3"
+    "tsx": "^3.12.3",
+    "vue": "^3.2.47"
   }
 }

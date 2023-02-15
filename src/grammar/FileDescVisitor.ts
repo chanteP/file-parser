@@ -32,7 +32,7 @@ import {
     StringValueContext,
     CalcExprContext,
 } from './FileDescParser';
-import { inMultiMatchDataValue } from '../utils';
+import { inMultiMatchDataValue, isMultiByteValueWithOffset } from '../utils';
 
 // This class defines a complete generic visitor for a parse tree produced by FileDescParser.
 
@@ -316,7 +316,7 @@ export default class FileDescVisitor extends antlr4.tree.ParseTreeVisitor {
         let once = 1;
         let maxLoopLimit = this.file.maxLoopLimit;
 
-        const condition = () => {
+        const condition = async () => {
             if (!this.file.hasFile()) {
                 return once--;
             }
@@ -326,12 +326,12 @@ export default class FileDescVisitor extends antlr4.tree.ParseTreeVisitor {
                 return false;
             }
             const [whileMark, lb, expectValue, rb] = this.visitChildren(ctx);
-            debugger;
-            expectValue;
-            return false;
+
+            const fileData = await this.file.getFileData();
+            return isMultiByteValueWithOffset(fileData!, this.file.pointer, expectValue);
         };
 
-        while (condition()) {
+        while (await condition()) {
             const group = await execGroup();
             group.loop = true;
             group.optional = true;

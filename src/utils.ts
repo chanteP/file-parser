@@ -52,4 +52,23 @@ export function inMultiMatchDataValue(value: any, multiMatchDataValue: (string |
     });
 }
 
-export function isByteValueWithOffset(data: any, offset: number, matchDataValue: Uint8Array) {}
+export function isMultiByteValueWithOffset(data: ArrayBuffer, offset: number, multiMatchDataValue: Uint8Array[]) {
+    let i = 0;
+    while (true) {
+        if (offset + i > data.byteLength) {
+            return false;
+        }
+        const check = multiMatchDataValue.some((matchDataValue) => {
+            const length = matchDataValue.length;
+            if (offset + i + length > data.byteLength) {
+                return false;
+            }
+            return isByteValue(data.slice(offset + i, length), matchDataValue);
+        });
+        if (check) {
+            return true;
+        }
+        i++;
+    }
+    return false;
+}

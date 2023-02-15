@@ -51,6 +51,7 @@ export class FileData {
     maxLoopLimit = 10000;
 
     private file?: File;
+    private cacheFileData?: ArrayBuffer;
 
     ready = createDefer();
 
@@ -94,8 +95,19 @@ export class FileData {
 
     setFile(file?: File) {
         this.file = file;
+        this.cacheFileData = undefined;
     }
 
+    async getFileData() {
+        if (!this.file) {
+            return null;
+        }
+        if (this.cacheFileData) {
+            return this.cacheFileData;
+        }
+        this.cacheFileData = await this.file.arrayBuffer();
+        return this.cacheFileData;
+    }
     async getData(start: number, end: number, order: DataOrder = DataOrder.LE): Promise<ArrayBuffer | null> {
         if (!this.file) {
             return null;
