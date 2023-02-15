@@ -36,21 +36,19 @@ import { getValueFromExpr, packValueOfFunction } from '../utils';
 
 // This class defines a complete generic visitor for a parse tree produced by FileDescParser.
 
-type OffsetPatternResult =
-    | {
-          shouldMove: true;
-          order: DataOrder;
-          offset: () => number;
-          length: () => number;
-          end?: () => number;
-      }
-    | {
-          shouldMove: false;
-          order: DataOrder;
-          offset: () => number;
-          length: () => number;
-          end: () => number;
-      };
+type OffsetLengthPatternResult = {
+    shouldMove: true;
+    order: DataOrder;
+    offset: number | string;
+    length: number | string;
+};
+type OffsetEndPatternResult = {
+    shouldMove: false;
+    order: DataOrder;
+    offset: number | string;
+    end: number | string;
+};
+type OffsetPatternResult = OffsetLengthPatternResult | OffsetEndPatternResult;
 
 export default class FileDescVisitor extends antlr4.tree.ParseTreeVisitor {
     private file: FileData;
@@ -78,32 +76,32 @@ export default class FileDescVisitor extends antlr4.tree.ParseTreeVisitor {
 
     // Visit a parse tree produced by FileDescParser#groupLine.
     visitGroupLine(ctx: GroupLineContext) {
+        const protoChildren = ctx.children;
         const children =
-            ctx.children[0] instanceof GroupCommandExprContext ? ctx.children : [undefined, ...ctx.children];
+            protoChildren[0] instanceof GroupCommandExprContext ? [...protoChildren] : [undefined, ...protoChildren];
         const [command, markData, nameData] = children;
 
         const groupData: GroupRecord = {
             type: 'group',
             level: markData.getText().length,
-            name: () => nameData ?? '',
+            name: nameData.getText() ?? '',
             content: [],
         };
         // 得先push再操作command。command依赖group栈处理
         this.file.push(groupData);
         console.log('group---', ctx.getText(), groupData);
 
-        return this.visitChildren(ctx);
+        command && this.visitGroupCommandExpr(command);
     }
 
     // Visit a parse tree produced by FileDescParser#fieldLine.
     visitFieldLine(ctx: FieldLineContext) {
         const fieldNodeData = this.visitChildren(ctx);
 
-        const [name, s1, offsetPattern, s2, formatter = []] = fieldNodeData;
+        const [name, s1, offsetPatternData, s2, formatter = []] = fieldNodeData;
 
-        const { shouldMove, order, offset, length, end } = offsetPattern as OffsetPatternResult;
-
-        const data = () => this.file.getData(offset(), end === undefined ? offset() + length() : end());
+        const offsetPattern: OffsetPatternResult = offsetPatternData;
+        const { shouldMove, order, offset } = offsetPattern;
 
         const fieldData: FieldRecord = {
             type: 'field',
@@ -111,10 +109,31 @@ export default class FileDescVisitor extends antlr4.tree.ParseTreeVisitor {
             offset,
             order,
             shouldMove,
-            data,
+            data: null,
+            value: undefined,
             length,
             formatter,
         };
+
+        if ('length' in offsetPattern) {
+            fieldData.length = offsetPattern.length;
+            fieldData.offset = this.file.pointer;
+
+            fieldData.data = this.file.getData(
+                fieldData.offset,
+                fieldData.offset + Number(fieldData.length),
+                fieldData.order,
+            );
+            this.file.move(Number(fieldData.length));
+        } else {
+            fieldData.offset = offset;
+            fieldData.end = offsetPattern.end;
+
+            fieldData.data = this.file.getData(Number(fieldData.offset), Number(fieldData.end), fieldData.order);
+        }
+
+        const value = this.file.pipeDataFormatter(fieldData.data, formatter);
+        fieldData.value = value;
 
         this.file.push(fieldData);
 
@@ -202,9 +221,9 @@ export default class FileDescVisitor extends antlr4.tree.ParseTreeVisitor {
         const data = this.visitChildren(ctx);
         let order = DataOrder.LE;
         let shouldMove = true;
-        let offset = () => this.file.pointer;
-        let end = () => 0;
-        let length = () => 0;
+        let offset = this.file.pointer;
+        let end = 0;
+        let length = 0;
 
         if (data[0] === '>') {
             order = DataOrder.BE;
@@ -218,11 +237,10 @@ export default class FileDescVisitor extends antlr4.tree.ParseTreeVisitor {
             shouldMove = false;
             offset = data[1];
             end = data[3];
-            length = () => end() - offset() || 0;
-        } else {
-            length = () => +data[0] || 0;
+            return { shouldMove, order, offset, end };
         }
-        return { shouldMove, order, offset, length, end };
+        length = data[0] || 0;
+        return { shouldMove, order, offset, length };
     }
 
     // Visit a parse tree produced by FileDescParser#dataFormatExpr.
@@ -262,22 +280,22 @@ export default class FileDescVisitor extends antlr4.tree.ParseTreeVisitor {
 
     // Visit a parse tree produced by FileDescParser#textValue.
     visitTextValue(ctx: TextValueContext) {
-        return this.visitChildren(ctx).map(getValueFromExpr).join(' ');
+        return this.visitChildren(ctx).join(' ');
     }
 
     // Visit a parse tree produced by FileDescParser#stringValue.
     visitStringValue(ctx: StringValueContext) {
-        return this.visitChildren(ctx).map(getValueFromExpr).join(' ');
+        return this.visitChildren(ctx).join(' ');
     }
 
     // Visit a parse tree produced by FileDescParser#calcExpr.
-    visitCalcExpr(ctx: CalcExprContext): () => FieldValue {
+    visitCalcExpr(ctx: CalcExprContext): FieldValue {
         if (ctx.children.length === 1) {
             const data = ctx.children[0].getText();
             if (isNaN(data)) {
-                return packValueOfFunction(() => this.file.getVar(data));
+                return this.file.getVar(data);
             }
-            return packValueOfFunction(() => data);
+            return data;
         }
         const rs = this.visitChildren(ctx);
         if (rs[0] === '(') {
@@ -286,13 +304,13 @@ export default class FileDescVisitor extends antlr4.tree.ParseTreeVisitor {
         const [l, o, r] = rs;
         switch (o) {
             case '*':
-                return packValueOfFunction(() => +l * +r);
+                return +l * +r;
             case '/':
-                return packValueOfFunction(() => +l / +r);
+                return +l / +r;
             case '+':
-                return packValueOfFunction(() => +l + +r);
+                return +l + +r;
             case '-':
-                return packValueOfFunction(() => +l - +r);
+                return +l - +r;
         }
         throw new SyntaxException(`unknown operation ${o}`);
     }

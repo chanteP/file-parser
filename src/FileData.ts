@@ -1,7 +1,7 @@
 export interface GroupRecord {
     type: 'group';
     level: number;
-    name: () => string;
+    name: string;
     content: FileRecords[];
 
     optional?: () => boolean;
@@ -10,15 +10,17 @@ export interface GroupRecord {
 
 export enum DataOrder {
     BE = 0,
-    LE,
+    LE = 1,
 }
 
 export interface FieldRecord {
     type: 'field';
     name: string;
-    offset: () => number;
-    length: () => number;
-    data: () => Blob | null;
+    offset: number | string;
+    length?: number | string;
+    end?: number | string;
+    data: Blob | null;
+    value: FieldValue;
     shouldMove: boolean;
     order: DataOrder;
     formatter: string[];
@@ -26,7 +28,8 @@ export interface FieldRecord {
 
 export interface CommandRecord {
     type: 'command';
-    exec: (count: number) => void;
+    name: string;
+    text: string;
 }
 
 type FileRecords = GroupRecord | FieldRecord | CommandRecord;
@@ -80,6 +83,9 @@ export class FileData {
             this.groupStack.push(record);
             return;
         }
+        if (record.type === 'field') {
+            this.VO.set(record.name, record.value);
+        }
         this.addRecord(record);
     }
 
@@ -92,39 +98,14 @@ export class FileData {
         this.file = file;
     }
 
-    exec(list: FileRecords[] = this.data) {
-        return list.map((line) => {
-            if (line.type === 'group') {
-                return {
-                    ...line,
-                    name: line.name(),
-                    content: this.exec(line.content),
-                };
-            }
-            if (line.type === 'field') {
-                return {
-                    ...line,
-                    value: this.pipeDataFormatter(line.data(), line.formatter),
-                    offset: line.offset(),
-                    length: line.length(),
-                };
-            }
-            if (line.type === 'command') {
-                return {
-                    ...line,
-                };
-            }
-        });
-    }
-
-    getData(start: number, end: number) {
+    getData(start: number, end: number, order: DataOrder = DataOrder.LE) {
         if (!this.file) {
             return null;
         }
         return this.file.slice(start, end);
     }
 
-    pipeDataFormatter(data: Blob | null, dataFormatterKeys: string[]) {
+    pipeDataFormatter(data: Blob | null, dataFormatterKeys: string[]): FieldValue {
         let rs = data;
         dataFormatterKeys.forEach((key) => {
             const formatter = dataFormatterMap.get(key);

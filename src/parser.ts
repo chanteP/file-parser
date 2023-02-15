@@ -23,5 +23,5 @@ export function parse(fileFormat: string, file?: File) {
     tree.accept(new FileDescVisitor(data));
     
     console.log(data);
-    return data.exec();
+    return data;
 }
