@@ -37,7 +37,7 @@ backFindCommand: BACKFIND '(' multiByteValue ')';
 // basic expression ---------------------------------
 multiByteValue: byteValue ('|' byteValue)*;
 multiMatchDataValue: matchDataExpr ('|' matchDataExpr)*;
-matchDataExpr: BYTE_VALUE | string | NUMBER;
+matchDataExpr: byteData | string | number;
 
 offsetExpr: ('>' | '<')? (
 		numberValue
@@ -47,20 +47,22 @@ offsetExpr: ('>' | '<')? (
 dataFormatExpr: VAR ('|' VAR)*;
 
 // basic value ---------------------------------
-textValue: (varExpr | VAR | NUMBER | string)+;
+textValue: (varExpr | VAR | number | string)+;
 stringValue: (varExpr | VAR)+;
-numberValue: varExpr | NUMBER;
-byteValue: varExpr | BYTE_VALUE;
+numberValue: varExpr | number;
+byteValue: varExpr | byteData;
 
 varExpr: '${' calcExpr '}';
 calcExpr:
 	VAR
-	| NUMBER
+	| number
 	| '(' calcExpr ')'
 	| calcExpr (ASTERISK | SLASH) calcExpr
 	| calcExpr (PLUS | MINUS) calcExpr;
 
 string: STRING;
+byteData: BYTE_VALUE;
+number: NUMBER;
 
 /**
  lexer ------------------------------------------
@@ -100,7 +102,7 @@ NEWLINE: ('\r'? '\n' | '\r')+;
 // value --------------------
 STRING: '"' .*? '"' | '\'' .*? '\'';
 
-BYTE_VALUE: '[' (HEX HEX)+ ']';
+BYTE_VALUE: '[' HEX HEX (' ' HEX HEX)+ ']';
 NUMBER: DIGIT+ ('.' DIGIT+)?;
 VAR: ID;
 

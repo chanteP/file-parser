@@ -1,3 +1,5 @@
+import { createDefer } from './utils';
+
 export interface GroupRecord {
     type: 'group';
     level: number;
@@ -19,7 +21,7 @@ export interface FieldRecord {
     offset: number | string;
     length?: number | string;
     end?: number | string;
-    data: Blob | null;
+    data: ArrayBuffer | null;
     value: FieldValue;
     shouldMove: boolean;
     order: DataOrder;
@@ -46,22 +48,22 @@ export class FileData {
     pointer = 0;
 
     private groupStack: GroupRecord[] = [];
-    // 防止死循环的东西，测试用
-    private maxGroupLoopLimit = 30;
-    private maxLoopLimit = 10000;
+    maxLoopLimit = 10000;
 
     private file?: File;
+
+    ready = createDefer();
 
     // group ------------------------------------------------------------
     get currentScope() {
         return this.groupStack.length > 0 ? this.groupStack[this.groupStack.length - 1] : null;
     }
     private popTo(level: number) {
-        let testLimit = this.maxGroupLoopLimit;
-
-        while (this.currentScope && testLimit--) {
+        while (this.currentScope) {
             if (this.currentScope.level >= level) {
                 this.groupStack.pop();
+            } else {
+                break;
             }
         }
     }
@@ -94,14 +96,14 @@ export class FileData {
         this.file = file;
     }
 
-    getData(start: number, end: number, order: DataOrder = DataOrder.LE) {
+    async getData(start: number, end: number, order: DataOrder = DataOrder.LE): Promise<ArrayBuffer | null> {
         if (!this.file) {
             return null;
         }
-        return this.file.slice(start, end);
+        return this.file.slice(start, end).arrayBuffer();
     }
 
-    pipeDataFormatter(data: Blob | null, dataFormatterKeys: string[]): FieldValue {
+    pipeDataFormatter(data: ArrayBuffer | null, dataFormatterKeys: string[]): FieldValue {
         let rs = data;
         dataFormatterKeys.forEach((key) => {
             const formatter = dataFormatterMap.get(key);

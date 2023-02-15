@@ -23,6 +23,9 @@ data,\${chunkLength}, string
 if(chunkType is 'BIN') ## bin
 data,\${chunkLength}
 
+while([42 29 4e]) ## bin
+data,\${chunkLength}
+
 `;
 
 // const fileFormat = `
@@ -30,6 +33,8 @@ data,\${chunkLength}
 
 // `;
 
-const rs = parse(fileFormat);
+(async () => {
+    const rs = await parse(fileFormat);
 
-console.log('final----', rs);
+    console.log('final----', rs);
+})();

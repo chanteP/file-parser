@@ -32,7 +32,7 @@ import {
     StringValueContext,
     CalcExprContext,
 } from './FileDescParser';
-import {} from '../utils';
+import { inMultiMatchDataValue } from '../utils';
 
 // This class defines a complete generic visitor for a parse tree produced by FileDescParser.
 
@@ -51,7 +51,7 @@ type OffsetEndPatternResult = {
 type OffsetPatternResult = OffsetLengthPatternResult | OffsetEndPatternResult;
 
 type ScopeContext = GroupLineContext | FileDataContext;
-type ChildContext = antlr4.ParserRuleContext;
+type ChildContext = GroupLineContext | FieldLineContext | CommandLineContext;
 
 interface ScopeInfo {
     level: number;
@@ -64,7 +64,7 @@ enum ParseAction {
     COLLECT = 1,
 }
 
-type GroupCommandFunction = () => GroupRecord;
+type GroupCommandFunction = () => Promise<GroupRecord>;
 
 export default class FileDescVisitor extends antlr4.tree.ParseTreeVisitor {
     private file: FileData;
@@ -108,7 +108,7 @@ export default class FileDescVisitor extends antlr4.tree.ParseTreeVisitor {
         }
 
         if (this.currentScope && this.isCollecting) {
-            this.pushChildContext(scopeContext);
+            this.pushChildContext(scopeContext as GroupLineContext);
         }
 
         this.scopeStack.push({
@@ -128,12 +128,26 @@ export default class FileDescVisitor extends antlr4.tree.ParseTreeVisitor {
         this.cacheScopeContext.get(this.currentScope.context)!.push(ctx);
     }
 
-    private visitCollectContextChildren(ctx: ChildContext) {
-        const children = this.cacheScopeContext.get(ctx as ScopeContext) ?? [];
-        return children.map((child) => {
+    private async visitCollectContextChildren(ctx: ScopeContext) {
+        const children = this.cacheScopeContext.get(ctx) ?? [];
+
+        let i = 0;
+        while (i < children.length) {
+            const child = children[i]!;
+            i++;
+
             this.log('exec: ', child.getText());
-            this.visit(child);
-        });
+            if (child instanceof GroupLineContext) {
+                await this.visitGroupLine(child);
+            } else if (child instanceof FieldLineContext) {
+                await this.visitFieldLine(child);
+            } else if (child instanceof CommandLineContext) {
+                await this.visitCommandLine(child);
+            } else {
+                console.error('unexpected line', child);
+                // await this.visit(child);
+            }
+        }
     }
 
     private drawScope(ctx?: ScopeContext, tab = '|---') {
@@ -156,7 +170,7 @@ export default class FileDescVisitor extends antlr4.tree.ParseTreeVisitor {
     }
 
     // Visit a parse tree produced by FileDescParser#fileData.
-    visitFileData(ctx: FileDataContext) {
+    async visitFileData(ctx: FileDataContext) {
         this.parseStatus = ParseAction.COLLECT;
         this.addScope(ctx, 0);
         this.visitChildren(ctx);
@@ -171,7 +185,9 @@ export default class FileDescVisitor extends antlr4.tree.ParseTreeVisitor {
         this.log('scope------', this.scopeStack);
 
         this.parseStatus = ParseAction.PARSE;
-        this.visitCollectContextChildren(ctx);
+        await this.visitCollectContextChildren(ctx);
+
+        this.file.ready.resolve();
     }
     // line ----------------------------------------------------------------
 
@@ -181,7 +197,7 @@ export default class FileDescVisitor extends antlr4.tree.ParseTreeVisitor {
     }
 
     // Visit a parse tree produced by FileDescParser#groupLine.
-    visitGroupLine(ctx: GroupLineContext) {
+    async visitGroupLine(ctx: GroupLineContext) {
         const protoChildren = ctx.children;
         const children =
             protoChildren[0] instanceof GroupCommandExprContext ? [...protoChildren] : [undefined, ...protoChildren];
@@ -194,7 +210,7 @@ export default class FileDescVisitor extends antlr4.tree.ParseTreeVisitor {
             return;
         }
 
-        const parseGroupData: GroupCommandFunction = () => {
+        const parseGroupData: GroupCommandFunction = async () => {
             const groupData: GroupRecord = {
                 type: 'group',
                 level,
@@ -205,19 +221,19 @@ export default class FileDescVisitor extends antlr4.tree.ParseTreeVisitor {
             this.file.push(groupData);
             this.log('group---', ctx.getText(), groupData);
 
-            this.visitCollectContextChildren(ctx);
+            await this.visitCollectContextChildren(ctx);
             return groupData;
         };
 
         if (command) {
-            this.visitGroupCommandExpr(command, parseGroupData);
+            await this.visitGroupCommandExpr(command, parseGroupData);
         } else {
-            parseGroupData();
+            await parseGroupData();
         }
     }
 
     // Visit a parse tree produced by FileDescParser#fieldLine.
-    visitFieldLine(ctx: FieldLineContext) {
+    async visitFieldLine(ctx: FieldLineContext) {
         if (this.isCollecting) {
             this.pushChildContext(ctx);
             return;
@@ -246,7 +262,7 @@ export default class FileDescVisitor extends antlr4.tree.ParseTreeVisitor {
             fieldData.length = offsetPattern.length;
             fieldData.offset = this.file.pointer;
 
-            fieldData.data = this.file.getData(
+            fieldData.data = await this.file.getData(
                 fieldData.offset,
                 fieldData.offset + Number(fieldData.length),
                 fieldData.order,
@@ -256,7 +272,7 @@ export default class FileDescVisitor extends antlr4.tree.ParseTreeVisitor {
             fieldData.offset = offset;
             fieldData.end = offsetPattern.end;
 
-            fieldData.data = this.file.getData(Number(fieldData.offset), Number(fieldData.end), fieldData.order);
+            fieldData.data = await this.file.getData(Number(fieldData.offset), Number(fieldData.end), fieldData.order);
         }
 
         const value = this.file.pipeDataFormatter(fieldData.data, formatter);
@@ -280,58 +296,76 @@ export default class FileDescVisitor extends antlr4.tree.ParseTreeVisitor {
     // command ----------------------------------------------------------------
 
     // Visit a parse tree produced by FileDescParser#groupCommandExpr.
-    visitGroupCommandExpr(ctx: GroupCommandExprContext, execGroup: GroupCommandFunction) {
+    async visitGroupCommandExpr(ctx: GroupCommandExprContext, execGroup: GroupCommandFunction) {
         const commandContext = ctx.children?.[0];
         switch (true) {
             case commandContext instanceof WhileCommandContext:
-                this.visitWhileCommand(commandContext, execGroup);
+                await this.visitWhileCommand(commandContext, execGroup);
                 break;
             case commandContext instanceof IfCommandContext:
-                this.visitIfCommand(commandContext, execGroup);
+                await this.visitIfCommand(commandContext, execGroup);
                 break;
             case commandContext instanceof LoopCommandContext:
-                this.visitLoopCommand(commandContext, execGroup);
+                await this.visitLoopCommand(commandContext, execGroup);
                 break;
         }
     }
 
     // Visit a parse tree produced by FileDescParser#whileCommand.
-    visitWhileCommand(ctx: WhileCommandContext, execGroup: GroupCommandFunction) {
+    async visitWhileCommand(ctx: WhileCommandContext, execGroup: GroupCommandFunction) {
+        let once = 1;
+        let maxLoopLimit = this.file.maxLoopLimit;
+
         const condition = () => {
+            if (!this.file.hasFile()) {
+                return once--;
+            }
+            maxLoopLimit--;
+            if (maxLoopLimit <= 0) {
+                console.warn(`<while> reach max loop limit:${this.file.maxLoopLimit}`);
+                return false;
+            }
             const [whileMark, lb, expectValue, rb] = this.visitChildren(ctx);
+            debugger;
+            expectValue;
             return false;
         };
 
         while (condition()) {
-            const group = execGroup();
+            const group = await execGroup();
             group.loop = true;
             group.optional = true;
         }
     }
 
     // Visit a parse tree produced by FileDescParser#ifCommand.
-    visitIfCommand(ctx: IfCommandContext, execGroup: GroupCommandFunction) {
+    async visitIfCommand(ctx: IfCommandContext, execGroup: GroupCommandFunction) {
         const condition = () => {
+            if (!this.file.hasFile()) {
+                return true;
+            }
             const [ifMark, lb, varValue, isMark, expectValue, rb] = this.visitChildren(ctx);
             const data = this.file.getVar(varValue);
-            // debugger
-            [ifMark, lb, varValue, isMark, expectValue, rb]
-            return false;
+            return inMultiMatchDataValue(data, expectValue);
         };
 
         if (condition()) {
-            const group = execGroup();
+            const group = await execGroup();
             group.optional = true;
         }
     }
 
     // Visit a parse tree produced by FileDescParser#loopCommand.
-    visitLoopCommand(ctx: LoopCommandContext, execGroup: GroupCommandFunction) {
+    async visitLoopCommand(ctx: LoopCommandContext, execGroup: GroupCommandFunction) {
         const [loopMark, lb, loopValue, rb] = this.visitChildren(ctx);
-        let loopCount = +loopValue || 0;
+        let loopCount = +loopValue || (this.file.hasFile() ? 0 : 1);
 
+        if (loopCount > this.file.maxLoopLimit) {
+            console.warn(`<while> reach max loop limit:${this.file.maxLoopLimit}`);
+        }
+        loopCount = Math.min(this.file.maxLoopLimit, loopCount);
         while (loopCount-- > 0) {
-            const group = execGroup();
+            const group = await execGroup();
             group.loop = true;
         }
     }
@@ -420,17 +454,14 @@ export default class FileDescVisitor extends antlr4.tree.ParseTreeVisitor {
 
     // Visit a parse tree produced by FileDescParser#numberValue.
     visitNumberValue(ctx: NumberValueContext) {
-        const template = ctx.children[0].getText();
-        if (!isNaN(template)) {
-            return +template;
-        }
-        return this.visitChildren(ctx);
+        return this.visitChildren(ctx)[0];
     }
 
     // Visit a parse tree produced by FileDescParser#byteValue.
     visitByteValue(ctx: ByteValueContext) {
         if (ctx.children[0].getText === '[') {
             const valueList = this.visitChildren(ctx).slice(1, -1);
+            debugger;
             // TODO
             return valueList;
         }
@@ -450,6 +481,26 @@ export default class FileDescVisitor extends antlr4.tree.ParseTreeVisitor {
     // Visit a parse tree produced by FileDescParser#stringValue.
     visitStringValue(ctx: StringValueContext) {
         return this.visitChildren(ctx).join(' ');
+    }
+
+    visitByteData(ctx): Uint8Array {
+        const value = ctx.children[0]
+            .getText()
+            .slice(1, -1)
+            .split(' ')
+            .filter((s: string) => !!s)
+            .map((s) => {
+                return parseInt(s, 16);
+            });
+        return new Uint8Array(value);
+    }
+
+    visitNumber(ctx): number {
+        return +this.visitChildren(ctx)[0];
+    }
+
+    visitString(ctx): string {
+        return this.visitChildren(ctx)[0].slice(1, -1);
     }
 
     // Visit a parse tree produced by FileDescParser#calcExpr.

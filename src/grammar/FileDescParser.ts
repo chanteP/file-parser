@@ -3,76 +3,81 @@
 import antlr4 from 'antlr4';
 import FileDescVisitor from './FileDescVisitor';
 
-const serializedATN = [4,1,32,229,2,0,7,0,2,1,7,1,2,2,7,2,2,3,7,3,2,4,7,
+const serializedATN = [4,1,32,244,2,0,7,0,2,1,7,1,2,2,7,2,2,3,7,3,2,4,7,
 4,2,5,7,5,2,6,7,6,2,7,7,7,2,8,7,8,2,9,7,9,2,10,7,10,2,11,7,11,2,12,7,12,
 2,13,7,13,2,14,7,14,2,15,7,15,2,16,7,16,2,17,7,17,2,18,7,18,2,19,7,19,2,
-20,7,20,2,21,7,21,2,22,7,22,2,23,7,23,2,24,7,24,2,25,7,25,1,0,3,0,54,8,0,
-1,0,3,0,57,8,0,1,0,3,0,60,8,0,1,0,1,0,1,1,1,1,1,1,5,1,67,8,1,10,1,12,1,70,
-9,1,1,2,1,2,1,2,3,2,75,8,2,1,3,3,3,78,8,3,1,3,1,3,3,3,82,8,3,1,4,1,4,1,4,
-1,4,1,4,3,4,89,8,4,1,5,1,5,1,5,1,5,1,5,3,5,96,8,5,1,6,1,6,1,6,3,6,101,8,
-6,1,7,1,7,1,7,1,7,1,7,1,8,1,8,1,8,1,8,1,8,1,9,1,9,1,9,1,9,1,9,1,10,1,10,
-1,10,1,10,1,10,1,10,1,10,1,11,1,11,1,11,1,11,1,11,1,12,1,12,1,12,1,12,1,
-12,1,13,1,13,1,13,1,13,1,13,1,14,1,14,1,14,1,14,1,14,1,15,1,15,1,15,5,15,
-148,8,15,10,15,12,15,151,9,15,1,16,1,16,1,16,5,16,156,8,16,10,16,12,16,159,
-9,16,1,17,1,17,1,18,3,18,164,8,18,1,18,1,18,1,18,1,18,1,18,1,18,1,18,3,18,
-173,8,18,1,19,1,19,1,19,5,19,178,8,19,10,19,12,19,181,9,19,1,20,1,20,1,20,
-1,20,4,20,187,8,20,11,20,12,20,188,1,21,1,21,4,21,193,8,21,11,21,12,21,194,
-1,22,1,22,3,22,199,8,22,1,23,1,23,3,23,203,8,23,1,24,1,24,1,24,1,24,1,25,
-1,25,1,25,1,25,1,25,1,25,1,25,3,25,216,8,25,1,25,1,25,1,25,1,25,1,25,1,25,
-5,25,224,8,25,10,25,12,25,227,9,25,1,25,0,1,50,26,0,2,4,6,8,10,12,14,16,
-18,20,22,24,26,28,30,32,34,36,38,40,42,44,46,48,50,0,4,1,0,28,30,1,0,5,6,
-1,0,21,22,1,0,23,24,234,0,53,1,0,0,0,2,63,1,0,0,0,4,74,1,0,0,0,6,77,1,0,
-0,0,8,83,1,0,0,0,10,95,1,0,0,0,12,100,1,0,0,0,14,102,1,0,0,0,16,107,1,0,
-0,0,18,112,1,0,0,0,20,117,1,0,0,0,22,124,1,0,0,0,24,129,1,0,0,0,26,134,1,
-0,0,0,28,139,1,0,0,0,30,144,1,0,0,0,32,152,1,0,0,0,34,160,1,0,0,0,36,163,
-1,0,0,0,38,174,1,0,0,0,40,186,1,0,0,0,42,192,1,0,0,0,44,198,1,0,0,0,46,202,
-1,0,0,0,48,204,1,0,0,0,50,215,1,0,0,0,52,54,5,27,0,0,53,52,1,0,0,0,53,54,
-1,0,0,0,54,56,1,0,0,0,55,57,3,2,1,0,56,55,1,0,0,0,56,57,1,0,0,0,57,59,1,
-0,0,0,58,60,5,27,0,0,59,58,1,0,0,0,59,60,1,0,0,0,60,61,1,0,0,0,61,62,5,0,
-0,1,62,1,1,0,0,0,63,68,3,4,2,0,64,65,5,27,0,0,65,67,3,4,2,0,66,64,1,0,0,
-0,67,70,1,0,0,0,68,66,1,0,0,0,68,69,1,0,0,0,69,3,1,0,0,0,70,68,1,0,0,0,71,
-75,3,8,4,0,72,75,3,10,5,0,73,75,3,6,3,0,74,71,1,0,0,0,74,72,1,0,0,0,74,73,
-1,0,0,0,75,5,1,0,0,0,76,78,3,12,6,0,77,76,1,0,0,0,77,78,1,0,0,0,78,79,1,
-0,0,0,79,81,5,26,0,0,80,82,3,40,20,0,81,80,1,0,0,0,81,82,1,0,0,0,82,7,1,
-0,0,0,83,84,5,31,0,0,84,85,5,25,0,0,85,88,3,36,18,0,86,87,5,25,0,0,87,89,
-3,38,19,0,88,86,1,0,0,0,88,89,1,0,0,0,89,9,1,0,0,0,90,96,3,24,12,0,91,96,
-3,28,14,0,92,96,3,26,13,0,93,96,3,16,8,0,94,96,3,18,9,0,95,90,1,0,0,0,95,
-91,1,0,0,0,95,92,1,0,0,0,95,93,1,0,0,0,95,94,1,0,0,0,96,11,1,0,0,0,97,101,
-3,14,7,0,98,101,3,20,10,0,99,101,3,22,11,0,100,97,1,0,0,0,100,98,1,0,0,0,
-100,99,1,0,0,0,101,13,1,0,0,0,102,103,5,15,0,0,103,104,5,1,0,0,104,105,3,
-30,15,0,105,106,5,2,0,0,106,15,1,0,0,0,107,108,5,16,0,0,108,109,5,1,0,0,
-109,110,3,30,15,0,110,111,5,2,0,0,111,17,1,0,0,0,112,113,5,17,0,0,113,114,
-5,1,0,0,114,115,3,30,15,0,115,116,5,2,0,0,116,19,1,0,0,0,117,118,5,13,0,
-0,118,119,5,1,0,0,119,120,5,31,0,0,120,121,5,3,0,0,121,122,3,32,16,0,122,
-123,5,2,0,0,123,21,1,0,0,0,124,125,5,14,0,0,125,126,5,1,0,0,126,127,3,44,
-22,0,127,128,5,2,0,0,128,23,1,0,0,0,129,130,5,18,0,0,130,131,5,1,0,0,131,
-132,3,44,22,0,132,133,5,2,0,0,133,25,1,0,0,0,134,135,5,20,0,0,135,136,5,
-1,0,0,136,137,3,44,22,0,137,138,5,2,0,0,138,27,1,0,0,0,139,140,5,19,0,0,
-140,141,5,1,0,0,141,142,3,44,22,0,142,143,5,2,0,0,143,29,1,0,0,0,144,149,
-3,46,23,0,145,146,5,4,0,0,146,148,3,46,23,0,147,145,1,0,0,0,148,151,1,0,
-0,0,149,147,1,0,0,0,149,150,1,0,0,0,150,31,1,0,0,0,151,149,1,0,0,0,152,157,
-3,34,17,0,153,154,5,4,0,0,154,156,3,34,17,0,155,153,1,0,0,0,156,159,1,0,
-0,0,157,155,1,0,0,0,157,158,1,0,0,0,158,33,1,0,0,0,159,157,1,0,0,0,160,161,
-7,0,0,0,161,35,1,0,0,0,162,164,7,1,0,0,163,162,1,0,0,0,163,164,1,0,0,0,164,
-172,1,0,0,0,165,173,3,44,22,0,166,167,5,7,0,0,167,168,3,44,22,0,168,169,
-5,25,0,0,169,170,3,44,22,0,170,171,5,8,0,0,171,173,1,0,0,0,172,165,1,0,0,
-0,172,166,1,0,0,0,173,37,1,0,0,0,174,179,5,31,0,0,175,176,5,4,0,0,176,178,
-5,31,0,0,177,175,1,0,0,0,178,181,1,0,0,0,179,177,1,0,0,0,179,180,1,0,0,0,
-180,39,1,0,0,0,181,179,1,0,0,0,182,187,3,48,24,0,183,187,5,31,0,0,184,187,
-5,30,0,0,185,187,5,28,0,0,186,182,1,0,0,0,186,183,1,0,0,0,186,184,1,0,0,
-0,186,185,1,0,0,0,187,188,1,0,0,0,188,186,1,0,0,0,188,189,1,0,0,0,189,41,
-1,0,0,0,190,193,3,48,24,0,191,193,5,31,0,0,192,190,1,0,0,0,192,191,1,0,0,
-0,193,194,1,0,0,0,194,192,1,0,0,0,194,195,1,0,0,0,195,43,1,0,0,0,196,199,
-3,48,24,0,197,199,5,30,0,0,198,196,1,0,0,0,198,197,1,0,0,0,199,45,1,0,0,
-0,200,203,3,48,24,0,201,203,5,29,0,0,202,200,1,0,0,0,202,201,1,0,0,0,203,
-47,1,0,0,0,204,205,5,9,0,0,205,206,3,50,25,0,206,207,5,10,0,0,207,49,1,0,
-0,0,208,209,6,25,-1,0,209,216,5,31,0,0,210,216,5,30,0,0,211,212,5,1,0,0,
-212,213,3,50,25,0,213,214,5,2,0,0,214,216,1,0,0,0,215,208,1,0,0,0,215,210,
-1,0,0,0,215,211,1,0,0,0,216,225,1,0,0,0,217,218,10,2,0,0,218,219,7,2,0,0,
-219,224,3,50,25,3,220,221,10,1,0,0,221,222,7,3,0,0,222,224,3,50,25,2,223,
-217,1,0,0,0,223,220,1,0,0,0,224,227,1,0,0,0,225,223,1,0,0,0,225,226,1,0,
-0,0,226,51,1,0,0,0,227,225,1,0,0,0,24,53,56,59,68,74,77,81,88,95,100,149,
-157,163,172,179,186,188,192,194,198,202,215,223,225];
+20,7,20,2,21,7,21,2,22,7,22,2,23,7,23,2,24,7,24,2,25,7,25,2,26,7,26,2,27,
+7,27,2,28,7,28,1,0,3,0,60,8,0,1,0,3,0,63,8,0,1,0,3,0,66,8,0,1,0,1,0,1,1,
+1,1,1,1,5,1,73,8,1,10,1,12,1,76,9,1,1,2,1,2,1,2,3,2,81,8,2,1,3,3,3,84,8,
+3,1,3,1,3,3,3,88,8,3,1,4,1,4,1,4,1,4,1,4,3,4,95,8,4,1,5,1,5,1,5,1,5,1,5,
+3,5,102,8,5,1,6,1,6,1,6,3,6,107,8,6,1,7,1,7,1,7,1,7,1,7,1,8,1,8,1,8,1,8,
+1,8,1,8,1,8,1,9,1,9,1,9,1,9,1,9,1,10,1,10,1,10,1,10,1,10,1,11,1,11,1,11,
+1,11,1,11,1,12,1,12,1,12,1,12,1,12,1,13,1,13,1,13,1,13,1,13,1,14,1,14,1,
+14,1,14,1,14,1,15,1,15,1,15,5,15,154,8,15,10,15,12,15,157,9,15,1,16,1,16,
+1,16,5,16,162,8,16,10,16,12,16,165,9,16,1,17,1,17,1,17,3,17,170,8,17,1,18,
+3,18,173,8,18,1,18,1,18,1,18,1,18,1,18,1,18,1,18,3,18,182,8,18,1,19,1,19,
+1,19,5,19,187,8,19,10,19,12,19,190,9,19,1,20,1,20,1,20,1,20,4,20,196,8,20,
+11,20,12,20,197,1,21,1,21,4,21,202,8,21,11,21,12,21,203,1,22,1,22,3,22,208,
+8,22,1,23,1,23,3,23,212,8,23,1,24,1,24,1,24,1,24,1,25,1,25,1,25,1,25,1,25,
+1,25,1,25,3,25,225,8,25,1,25,1,25,1,25,1,25,1,25,1,25,5,25,233,8,25,10,25,
+12,25,236,9,25,1,26,1,26,1,27,1,27,1,28,1,28,1,28,0,1,50,29,0,2,4,6,8,10,
+12,14,16,18,20,22,24,26,28,30,32,34,36,38,40,42,44,46,48,50,52,54,56,0,3,
+1,0,5,6,1,0,21,22,1,0,23,24,248,0,59,1,0,0,0,2,69,1,0,0,0,4,80,1,0,0,0,6,
+83,1,0,0,0,8,89,1,0,0,0,10,101,1,0,0,0,12,106,1,0,0,0,14,108,1,0,0,0,16,
+113,1,0,0,0,18,120,1,0,0,0,20,125,1,0,0,0,22,130,1,0,0,0,24,135,1,0,0,0,
+26,140,1,0,0,0,28,145,1,0,0,0,30,150,1,0,0,0,32,158,1,0,0,0,34,169,1,0,0,
+0,36,172,1,0,0,0,38,183,1,0,0,0,40,195,1,0,0,0,42,201,1,0,0,0,44,207,1,0,
+0,0,46,211,1,0,0,0,48,213,1,0,0,0,50,224,1,0,0,0,52,237,1,0,0,0,54,239,1,
+0,0,0,56,241,1,0,0,0,58,60,5,27,0,0,59,58,1,0,0,0,59,60,1,0,0,0,60,62,1,
+0,0,0,61,63,3,2,1,0,62,61,1,0,0,0,62,63,1,0,0,0,63,65,1,0,0,0,64,66,5,27,
+0,0,65,64,1,0,0,0,65,66,1,0,0,0,66,67,1,0,0,0,67,68,5,0,0,1,68,1,1,0,0,0,
+69,74,3,4,2,0,70,71,5,27,0,0,71,73,3,4,2,0,72,70,1,0,0,0,73,76,1,0,0,0,74,
+72,1,0,0,0,74,75,1,0,0,0,75,3,1,0,0,0,76,74,1,0,0,0,77,81,3,8,4,0,78,81,
+3,10,5,0,79,81,3,6,3,0,80,77,1,0,0,0,80,78,1,0,0,0,80,79,1,0,0,0,81,5,1,
+0,0,0,82,84,3,12,6,0,83,82,1,0,0,0,83,84,1,0,0,0,84,85,1,0,0,0,85,87,5,26,
+0,0,86,88,3,40,20,0,87,86,1,0,0,0,87,88,1,0,0,0,88,7,1,0,0,0,89,90,5,31,
+0,0,90,91,5,25,0,0,91,94,3,36,18,0,92,93,5,25,0,0,93,95,3,38,19,0,94,92,
+1,0,0,0,94,95,1,0,0,0,95,9,1,0,0,0,96,102,3,20,10,0,97,102,3,24,12,0,98,
+102,3,22,11,0,99,102,3,26,13,0,100,102,3,28,14,0,101,96,1,0,0,0,101,97,1,
+0,0,0,101,98,1,0,0,0,101,99,1,0,0,0,101,100,1,0,0,0,102,11,1,0,0,0,103,107,
+3,14,7,0,104,107,3,16,8,0,105,107,3,18,9,0,106,103,1,0,0,0,106,104,1,0,0,
+0,106,105,1,0,0,0,107,13,1,0,0,0,108,109,5,15,0,0,109,110,5,1,0,0,110,111,
+3,30,15,0,111,112,5,2,0,0,112,15,1,0,0,0,113,114,5,13,0,0,114,115,5,1,0,
+0,115,116,5,31,0,0,116,117,5,3,0,0,117,118,3,32,16,0,118,119,5,2,0,0,119,
+17,1,0,0,0,120,121,5,14,0,0,121,122,5,1,0,0,122,123,3,44,22,0,123,124,5,
+2,0,0,124,19,1,0,0,0,125,126,5,18,0,0,126,127,5,1,0,0,127,128,3,44,22,0,
+128,129,5,2,0,0,129,21,1,0,0,0,130,131,5,20,0,0,131,132,5,1,0,0,132,133,
+3,44,22,0,133,134,5,2,0,0,134,23,1,0,0,0,135,136,5,19,0,0,136,137,5,1,0,
+0,137,138,3,44,22,0,138,139,5,2,0,0,139,25,1,0,0,0,140,141,5,16,0,0,141,
+142,5,1,0,0,142,143,3,30,15,0,143,144,5,2,0,0,144,27,1,0,0,0,145,146,5,17,
+0,0,146,147,5,1,0,0,147,148,3,30,15,0,148,149,5,2,0,0,149,29,1,0,0,0,150,
+155,3,46,23,0,151,152,5,4,0,0,152,154,3,46,23,0,153,151,1,0,0,0,154,157,
+1,0,0,0,155,153,1,0,0,0,155,156,1,0,0,0,156,31,1,0,0,0,157,155,1,0,0,0,158,
+163,3,34,17,0,159,160,5,4,0,0,160,162,3,34,17,0,161,159,1,0,0,0,162,165,
+1,0,0,0,163,161,1,0,0,0,163,164,1,0,0,0,164,33,1,0,0,0,165,163,1,0,0,0,166,
+170,3,54,27,0,167,170,3,52,26,0,168,170,3,56,28,0,169,166,1,0,0,0,169,167,
+1,0,0,0,169,168,1,0,0,0,170,35,1,0,0,0,171,173,7,0,0,0,172,171,1,0,0,0,172,
+173,1,0,0,0,173,181,1,0,0,0,174,182,3,44,22,0,175,176,5,7,0,0,176,177,3,
+44,22,0,177,178,5,25,0,0,178,179,3,44,22,0,179,180,5,8,0,0,180,182,1,0,0,
+0,181,174,1,0,0,0,181,175,1,0,0,0,182,37,1,0,0,0,183,188,5,31,0,0,184,185,
+5,4,0,0,185,187,5,31,0,0,186,184,1,0,0,0,187,190,1,0,0,0,188,186,1,0,0,0,
+188,189,1,0,0,0,189,39,1,0,0,0,190,188,1,0,0,0,191,196,3,48,24,0,192,196,
+5,31,0,0,193,196,3,56,28,0,194,196,3,52,26,0,195,191,1,0,0,0,195,192,1,0,
+0,0,195,193,1,0,0,0,195,194,1,0,0,0,196,197,1,0,0,0,197,195,1,0,0,0,197,
+198,1,0,0,0,198,41,1,0,0,0,199,202,3,48,24,0,200,202,5,31,0,0,201,199,1,
+0,0,0,201,200,1,0,0,0,202,203,1,0,0,0,203,201,1,0,0,0,203,204,1,0,0,0,204,
+43,1,0,0,0,205,208,3,48,24,0,206,208,3,56,28,0,207,205,1,0,0,0,207,206,1,
+0,0,0,208,45,1,0,0,0,209,212,3,48,24,0,210,212,3,54,27,0,211,209,1,0,0,0,
+211,210,1,0,0,0,212,47,1,0,0,0,213,214,5,9,0,0,214,215,3,50,25,0,215,216,
+5,10,0,0,216,49,1,0,0,0,217,218,6,25,-1,0,218,225,5,31,0,0,219,225,3,56,
+28,0,220,221,5,1,0,0,221,222,3,50,25,0,222,223,5,2,0,0,223,225,1,0,0,0,224,
+217,1,0,0,0,224,219,1,0,0,0,224,220,1,0,0,0,225,234,1,0,0,0,226,227,10,2,
+0,0,227,228,7,1,0,0,228,233,3,50,25,3,229,230,10,1,0,0,230,231,7,2,0,0,231,
+233,3,50,25,2,232,226,1,0,0,0,232,229,1,0,0,0,233,236,1,0,0,0,234,232,1,
+0,0,0,234,235,1,0,0,0,235,51,1,0,0,0,236,234,1,0,0,0,237,238,5,28,0,0,238,
+53,1,0,0,0,239,240,5,29,0,0,240,55,1,0,0,0,241,242,5,30,0,0,242,57,1,0,0,
+0,25,59,62,65,74,80,83,87,94,101,106,155,163,169,172,181,188,195,197,201,
+203,207,211,224,232,234];
 
 
 const atn = new antlr4.atn.ATNDeserializer().deserialize(serializedATN);
@@ -98,11 +103,12 @@ export default class FileDescParser extends antlr4.Parser {
                              "VAR", "WHITESPACE" ];
     static ruleNames = [ "program", "fileData", "line", "groupLine", "fieldLine", 
                          "commandLine", "groupCommandExpr", "whileCommand", 
-                         "findCommand", "backFindCommand", "ifCommand", 
-                         "loopCommand", "backCommand", "gotoCommand", "nextCommand", 
+                         "ifCommand", "loopCommand", "backCommand", "gotoCommand", 
+                         "nextCommand", "findCommand", "backFindCommand", 
                          "multiByteValue", "multiMatchDataValue", "matchDataExpr", 
                          "offsetExpr", "dataFormatExpr", "textValue", "stringValue", 
-                         "numberValue", "byteValue", "varExpr", "calcExpr" ];
+                         "numberValue", "byteValue", "varExpr", "calcExpr", 
+                         "string", "byteData", "number" ];
 
     constructor(input) {
         super(input);
@@ -145,31 +151,31 @@ export default class FileDescParser extends antlr4.Parser {
 	    var _la = 0; // Token type
 	    try {
 	        this.enterOuterAlt(localctx, 1);
-	        this.state = 53;
+	        this.state = 59;
 	        this._errHandler.sync(this);
 	        var la_ = this._interp.adaptivePredict(this._input,0,this._ctx);
 	        if(la_===1) {
-	            this.state = 52;
+	            this.state = 58;
 	            this.match(FileDescParser.NEWLINE);
 
 	        }
-	        this.state = 56;
+	        this.state = 62;
 	        this._errHandler.sync(this);
 	        _la = this._input.LA(1);
 	        if((((_la) & ~0x1f) == 0 && ((1 << _la) & 2216681472) !== 0)) {
-	            this.state = 55;
+	            this.state = 61;
 	            this.fileData();
 	        }
 
-	        this.state = 59;
+	        this.state = 65;
 	        this._errHandler.sync(this);
 	        _la = this._input.LA(1);
 	        if(_la===27) {
-	            this.state = 58;
+	            this.state = 64;
 	            this.match(FileDescParser.NEWLINE);
 	        }
 
-	        this.state = 61;
+	        this.state = 67;
 	        this.match(FileDescParser.EOF);
 	    } catch (re) {
 	    	if(re instanceof antlr4.error.RecognitionException) {
@@ -192,19 +198,19 @@ export default class FileDescParser extends antlr4.Parser {
 	    this.enterRule(localctx, 2, FileDescParser.RULE_fileData);
 	    try {
 	        this.enterOuterAlt(localctx, 1);
-	        this.state = 63;
+	        this.state = 69;
 	        this.line();
-	        this.state = 68;
+	        this.state = 74;
 	        this._errHandler.sync(this);
 	        var _alt = this._interp.adaptivePredict(this._input,3,this._ctx)
 	        while(_alt!=2 && _alt!=antlr4.atn.ATN.INVALID_ALT_NUMBER) {
 	            if(_alt===1) {
-	                this.state = 64;
+	                this.state = 70;
 	                this.match(FileDescParser.NEWLINE);
-	                this.state = 65;
+	                this.state = 71;
 	                this.line(); 
 	            }
-	            this.state = 70;
+	            this.state = 76;
 	            this._errHandler.sync(this);
 	            _alt = this._interp.adaptivePredict(this._input,3,this._ctx);
 	        }
@@ -229,12 +235,12 @@ export default class FileDescParser extends antlr4.Parser {
 	    let localctx = new LineContext(this, this._ctx, this.state);
 	    this.enterRule(localctx, 4, FileDescParser.RULE_line);
 	    try {
-	        this.state = 74;
+	        this.state = 80;
 	        this._errHandler.sync(this);
 	        switch(this._input.LA(1)) {
 	        case 31:
 	            this.enterOuterAlt(localctx, 1);
-	            this.state = 71;
+	            this.state = 77;
 	            this.fieldLine();
 	            break;
 	        case 16:
@@ -243,7 +249,7 @@ export default class FileDescParser extends antlr4.Parser {
 	        case 19:
 	        case 20:
 	            this.enterOuterAlt(localctx, 2);
-	            this.state = 72;
+	            this.state = 78;
 	            this.commandLine();
 	            break;
 	        case 13:
@@ -251,7 +257,7 @@ export default class FileDescParser extends antlr4.Parser {
 	        case 15:
 	        case 26:
 	            this.enterOuterAlt(localctx, 3);
-	            this.state = 73;
+	            this.state = 79;
 	            this.groupLine();
 	            break;
 	        default:
@@ -279,21 +285,21 @@ export default class FileDescParser extends antlr4.Parser {
 	    var _la = 0; // Token type
 	    try {
 	        this.enterOuterAlt(localctx, 1);
-	        this.state = 77;
+	        this.state = 83;
 	        this._errHandler.sync(this);
 	        _la = this._input.LA(1);
 	        if((((_la) & ~0x1f) == 0 && ((1 << _la) & 57344) !== 0)) {
-	            this.state = 76;
+	            this.state = 82;
 	            this.groupCommandExpr();
 	        }
 
-	        this.state = 79;
+	        this.state = 85;
 	        this.match(FileDescParser.GROUP_MARK);
-	        this.state = 81;
+	        this.state = 87;
 	        this._errHandler.sync(this);
 	        _la = this._input.LA(1);
 	        if((((_la) & ~0x1f) == 0 && ((1 << _la) & 3489661440) !== 0)) {
-	            this.state = 80;
+	            this.state = 86;
 	            this.textValue();
 	        }
 
@@ -319,19 +325,19 @@ export default class FileDescParser extends antlr4.Parser {
 	    var _la = 0; // Token type
 	    try {
 	        this.enterOuterAlt(localctx, 1);
-	        this.state = 83;
+	        this.state = 89;
 	        this.match(FileDescParser.VAR);
-	        this.state = 84;
+	        this.state = 90;
 	        this.match(FileDescParser.PART_SPLIT);
-	        this.state = 85;
+	        this.state = 91;
 	        this.offsetExpr();
-	        this.state = 88;
+	        this.state = 94;
 	        this._errHandler.sync(this);
 	        _la = this._input.LA(1);
 	        if(_la===25) {
-	            this.state = 86;
+	            this.state = 92;
 	            this.match(FileDescParser.PART_SPLIT);
-	            this.state = 87;
+	            this.state = 93;
 	            this.dataFormatExpr();
 	        }
 
@@ -355,32 +361,32 @@ export default class FileDescParser extends antlr4.Parser {
 	    let localctx = new CommandLineContext(this, this._ctx, this.state);
 	    this.enterRule(localctx, 10, FileDescParser.RULE_commandLine);
 	    try {
-	        this.state = 95;
+	        this.state = 101;
 	        this._errHandler.sync(this);
 	        switch(this._input.LA(1)) {
 	        case 18:
 	            this.enterOuterAlt(localctx, 1);
-	            this.state = 90;
+	            this.state = 96;
 	            this.backCommand();
 	            break;
 	        case 19:
 	            this.enterOuterAlt(localctx, 2);
-	            this.state = 91;
+	            this.state = 97;
 	            this.nextCommand();
 	            break;
 	        case 20:
 	            this.enterOuterAlt(localctx, 3);
-	            this.state = 92;
+	            this.state = 98;
 	            this.gotoCommand();
 	            break;
 	        case 16:
 	            this.enterOuterAlt(localctx, 4);
-	            this.state = 93;
+	            this.state = 99;
 	            this.findCommand();
 	            break;
 	        case 17:
 	            this.enterOuterAlt(localctx, 5);
-	            this.state = 94;
+	            this.state = 100;
 	            this.backFindCommand();
 	            break;
 	        default:
@@ -406,22 +412,22 @@ export default class FileDescParser extends antlr4.Parser {
 	    let localctx = new GroupCommandExprContext(this, this._ctx, this.state);
 	    this.enterRule(localctx, 12, FileDescParser.RULE_groupCommandExpr);
 	    try {
-	        this.state = 100;
+	        this.state = 106;
 	        this._errHandler.sync(this);
 	        switch(this._input.LA(1)) {
 	        case 15:
 	            this.enterOuterAlt(localctx, 1);
-	            this.state = 97;
+	            this.state = 103;
 	            this.whileCommand();
 	            break;
 	        case 13:
 	            this.enterOuterAlt(localctx, 2);
-	            this.state = 98;
+	            this.state = 104;
 	            this.ifCommand();
 	            break;
 	        case 14:
 	            this.enterOuterAlt(localctx, 3);
-	            this.state = 99;
+	            this.state = 105;
 	            this.loopCommand();
 	            break;
 	        default:
@@ -448,71 +454,13 @@ export default class FileDescParser extends antlr4.Parser {
 	    this.enterRule(localctx, 14, FileDescParser.RULE_whileCommand);
 	    try {
 	        this.enterOuterAlt(localctx, 1);
-	        this.state = 102;
-	        this.match(FileDescParser.WHILE);
-	        this.state = 103;
-	        this.match(FileDescParser.T__0);
-	        this.state = 104;
-	        this.multiByteValue();
-	        this.state = 105;
-	        this.match(FileDescParser.T__1);
-	    } catch (re) {
-	    	if(re instanceof antlr4.error.RecognitionException) {
-		        localctx.exception = re;
-		        this._errHandler.reportError(this, re);
-		        this._errHandler.recover(this, re);
-		    } else {
-		    	throw re;
-		    }
-	    } finally {
-	        this.exitRule();
-	    }
-	    return localctx;
-	}
-
-
-
-	findCommand() {
-	    let localctx = new FindCommandContext(this, this._ctx, this.state);
-	    this.enterRule(localctx, 16, FileDescParser.RULE_findCommand);
-	    try {
-	        this.enterOuterAlt(localctx, 1);
-	        this.state = 107;
-	        this.match(FileDescParser.FIND);
 	        this.state = 108;
-	        this.match(FileDescParser.T__0);
+	        this.match(FileDescParser.WHILE);
 	        this.state = 109;
-	        this.multiByteValue();
-	        this.state = 110;
-	        this.match(FileDescParser.T__1);
-	    } catch (re) {
-	    	if(re instanceof antlr4.error.RecognitionException) {
-		        localctx.exception = re;
-		        this._errHandler.reportError(this, re);
-		        this._errHandler.recover(this, re);
-		    } else {
-		    	throw re;
-		    }
-	    } finally {
-	        this.exitRule();
-	    }
-	    return localctx;
-	}
-
-
-
-	backFindCommand() {
-	    let localctx = new BackFindCommandContext(this, this._ctx, this.state);
-	    this.enterRule(localctx, 18, FileDescParser.RULE_backFindCommand);
-	    try {
-	        this.enterOuterAlt(localctx, 1);
-	        this.state = 112;
-	        this.match(FileDescParser.BACKFIND);
-	        this.state = 113;
 	        this.match(FileDescParser.T__0);
-	        this.state = 114;
+	        this.state = 110;
 	        this.multiByteValue();
-	        this.state = 115;
+	        this.state = 111;
 	        this.match(FileDescParser.T__1);
 	    } catch (re) {
 	    	if(re instanceof antlr4.error.RecognitionException) {
@@ -532,20 +480,20 @@ export default class FileDescParser extends antlr4.Parser {
 
 	ifCommand() {
 	    let localctx = new IfCommandContext(this, this._ctx, this.state);
-	    this.enterRule(localctx, 20, FileDescParser.RULE_ifCommand);
+	    this.enterRule(localctx, 16, FileDescParser.RULE_ifCommand);
 	    try {
 	        this.enterOuterAlt(localctx, 1);
-	        this.state = 117;
+	        this.state = 113;
 	        this.match(FileDescParser.IF);
-	        this.state = 118;
+	        this.state = 114;
 	        this.match(FileDescParser.T__0);
-	        this.state = 119;
+	        this.state = 115;
 	        this.match(FileDescParser.VAR);
-	        this.state = 120;
+	        this.state = 116;
 	        this.match(FileDescParser.T__2);
-	        this.state = 121;
+	        this.state = 117;
 	        this.multiMatchDataValue();
-	        this.state = 122;
+	        this.state = 118;
 	        this.match(FileDescParser.T__1);
 	    } catch (re) {
 	    	if(re instanceof antlr4.error.RecognitionException) {
@@ -565,16 +513,16 @@ export default class FileDescParser extends antlr4.Parser {
 
 	loopCommand() {
 	    let localctx = new LoopCommandContext(this, this._ctx, this.state);
-	    this.enterRule(localctx, 22, FileDescParser.RULE_loopCommand);
+	    this.enterRule(localctx, 18, FileDescParser.RULE_loopCommand);
 	    try {
 	        this.enterOuterAlt(localctx, 1);
-	        this.state = 124;
+	        this.state = 120;
 	        this.match(FileDescParser.LOOP);
-	        this.state = 125;
+	        this.state = 121;
 	        this.match(FileDescParser.T__0);
-	        this.state = 126;
+	        this.state = 122;
 	        this.numberValue();
-	        this.state = 127;
+	        this.state = 123;
 	        this.match(FileDescParser.T__1);
 	    } catch (re) {
 	    	if(re instanceof antlr4.error.RecognitionException) {
@@ -594,16 +542,16 @@ export default class FileDescParser extends antlr4.Parser {
 
 	backCommand() {
 	    let localctx = new BackCommandContext(this, this._ctx, this.state);
-	    this.enterRule(localctx, 24, FileDescParser.RULE_backCommand);
+	    this.enterRule(localctx, 20, FileDescParser.RULE_backCommand);
 	    try {
 	        this.enterOuterAlt(localctx, 1);
-	        this.state = 129;
+	        this.state = 125;
 	        this.match(FileDescParser.BACK);
-	        this.state = 130;
+	        this.state = 126;
 	        this.match(FileDescParser.T__0);
-	        this.state = 131;
+	        this.state = 127;
 	        this.numberValue();
-	        this.state = 132;
+	        this.state = 128;
 	        this.match(FileDescParser.T__1);
 	    } catch (re) {
 	    	if(re instanceof antlr4.error.RecognitionException) {
@@ -623,16 +571,16 @@ export default class FileDescParser extends antlr4.Parser {
 
 	gotoCommand() {
 	    let localctx = new GotoCommandContext(this, this._ctx, this.state);
-	    this.enterRule(localctx, 26, FileDescParser.RULE_gotoCommand);
+	    this.enterRule(localctx, 22, FileDescParser.RULE_gotoCommand);
 	    try {
 	        this.enterOuterAlt(localctx, 1);
-	        this.state = 134;
+	        this.state = 130;
 	        this.match(FileDescParser.GOTO);
-	        this.state = 135;
+	        this.state = 131;
 	        this.match(FileDescParser.T__0);
-	        this.state = 136;
+	        this.state = 132;
 	        this.numberValue();
-	        this.state = 137;
+	        this.state = 133;
 	        this.match(FileDescParser.T__1);
 	    } catch (re) {
 	    	if(re instanceof antlr4.error.RecognitionException) {
@@ -652,16 +600,74 @@ export default class FileDescParser extends antlr4.Parser {
 
 	nextCommand() {
 	    let localctx = new NextCommandContext(this, this._ctx, this.state);
-	    this.enterRule(localctx, 28, FileDescParser.RULE_nextCommand);
+	    this.enterRule(localctx, 24, FileDescParser.RULE_nextCommand);
 	    try {
 	        this.enterOuterAlt(localctx, 1);
-	        this.state = 139;
+	        this.state = 135;
 	        this.match(FileDescParser.NEXT);
-	        this.state = 140;
+	        this.state = 136;
 	        this.match(FileDescParser.T__0);
-	        this.state = 141;
+	        this.state = 137;
 	        this.numberValue();
+	        this.state = 138;
+	        this.match(FileDescParser.T__1);
+	    } catch (re) {
+	    	if(re instanceof antlr4.error.RecognitionException) {
+		        localctx.exception = re;
+		        this._errHandler.reportError(this, re);
+		        this._errHandler.recover(this, re);
+		    } else {
+		    	throw re;
+		    }
+	    } finally {
+	        this.exitRule();
+	    }
+	    return localctx;
+	}
+
+
+
+	findCommand() {
+	    let localctx = new FindCommandContext(this, this._ctx, this.state);
+	    this.enterRule(localctx, 26, FileDescParser.RULE_findCommand);
+	    try {
+	        this.enterOuterAlt(localctx, 1);
+	        this.state = 140;
+	        this.match(FileDescParser.FIND);
+	        this.state = 141;
+	        this.match(FileDescParser.T__0);
 	        this.state = 142;
+	        this.multiByteValue();
+	        this.state = 143;
+	        this.match(FileDescParser.T__1);
+	    } catch (re) {
+	    	if(re instanceof antlr4.error.RecognitionException) {
+		        localctx.exception = re;
+		        this._errHandler.reportError(this, re);
+		        this._errHandler.recover(this, re);
+		    } else {
+		    	throw re;
+		    }
+	    } finally {
+	        this.exitRule();
+	    }
+	    return localctx;
+	}
+
+
+
+	backFindCommand() {
+	    let localctx = new BackFindCommandContext(this, this._ctx, this.state);
+	    this.enterRule(localctx, 28, FileDescParser.RULE_backFindCommand);
+	    try {
+	        this.enterOuterAlt(localctx, 1);
+	        this.state = 145;
+	        this.match(FileDescParser.BACKFIND);
+	        this.state = 146;
+	        this.match(FileDescParser.T__0);
+	        this.state = 147;
+	        this.multiByteValue();
+	        this.state = 148;
 	        this.match(FileDescParser.T__1);
 	    } catch (re) {
 	    	if(re instanceof antlr4.error.RecognitionException) {
@@ -685,17 +691,17 @@ export default class FileDescParser extends antlr4.Parser {
 	    var _la = 0; // Token type
 	    try {
 	        this.enterOuterAlt(localctx, 1);
-	        this.state = 144;
+	        this.state = 150;
 	        this.byteValue();
-	        this.state = 149;
+	        this.state = 155;
 	        this._errHandler.sync(this);
 	        _la = this._input.LA(1);
 	        while(_la===4) {
-	            this.state = 145;
-	            this.match(FileDescParser.T__3);
-	            this.state = 146;
-	            this.byteValue();
 	            this.state = 151;
+	            this.match(FileDescParser.T__3);
+	            this.state = 152;
+	            this.byteValue();
+	            this.state = 157;
 	            this._errHandler.sync(this);
 	            _la = this._input.LA(1);
 	        }
@@ -721,17 +727,17 @@ export default class FileDescParser extends antlr4.Parser {
 	    var _la = 0; // Token type
 	    try {
 	        this.enterOuterAlt(localctx, 1);
-	        this.state = 152;
+	        this.state = 158;
 	        this.matchDataExpr();
-	        this.state = 157;
+	        this.state = 163;
 	        this._errHandler.sync(this);
 	        _la = this._input.LA(1);
 	        while(_la===4) {
-	            this.state = 153;
-	            this.match(FileDescParser.T__3);
-	            this.state = 154;
-	            this.matchDataExpr();
 	            this.state = 159;
+	            this.match(FileDescParser.T__3);
+	            this.state = 160;
+	            this.matchDataExpr();
+	            this.state = 165;
 	            this._errHandler.sync(this);
 	            _la = this._input.LA(1);
 	        }
@@ -754,17 +760,27 @@ export default class FileDescParser extends antlr4.Parser {
 	matchDataExpr() {
 	    let localctx = new MatchDataExprContext(this, this._ctx, this.state);
 	    this.enterRule(localctx, 34, FileDescParser.RULE_matchDataExpr);
-	    var _la = 0; // Token type
 	    try {
-	        this.enterOuterAlt(localctx, 1);
-	        this.state = 160;
-	        _la = this._input.LA(1);
-	        if(!((((_la) & ~0x1f) == 0 && ((1 << _la) & 1879048192) !== 0))) {
-	        this._errHandler.recoverInline(this);
-	        }
-	        else {
-	        	this._errHandler.reportMatch(this);
-	            this.consume();
+	        this.state = 169;
+	        this._errHandler.sync(this);
+	        switch(this._input.LA(1)) {
+	        case 29:
+	            this.enterOuterAlt(localctx, 1);
+	            this.state = 166;
+	            this.byteData();
+	            break;
+	        case 28:
+	            this.enterOuterAlt(localctx, 2);
+	            this.state = 167;
+	            this.string();
+	            break;
+	        case 30:
+	            this.enterOuterAlt(localctx, 3);
+	            this.state = 168;
+	            this.number();
+	            break;
+	        default:
+	            throw new antlr4.error.NoViableAltException(this);
 	        }
 	    } catch (re) {
 	    	if(re instanceof antlr4.error.RecognitionException) {
@@ -788,11 +804,11 @@ export default class FileDescParser extends antlr4.Parser {
 	    var _la = 0; // Token type
 	    try {
 	        this.enterOuterAlt(localctx, 1);
-	        this.state = 163;
+	        this.state = 172;
 	        this._errHandler.sync(this);
 	        _la = this._input.LA(1);
 	        if(_la===5 || _la===6) {
-	            this.state = 162;
+	            this.state = 171;
 	            _la = this._input.LA(1);
 	            if(!(_la===5 || _la===6)) {
 	            this._errHandler.recoverInline(this);
@@ -803,24 +819,24 @@ export default class FileDescParser extends antlr4.Parser {
 	            }
 	        }
 
-	        this.state = 172;
+	        this.state = 181;
 	        this._errHandler.sync(this);
 	        switch(this._input.LA(1)) {
 	        case 9:
 	        case 30:
-	            this.state = 165;
+	            this.state = 174;
 	            this.numberValue();
 	            break;
 	        case 7:
-	            this.state = 166;
+	            this.state = 175;
 	            this.match(FileDescParser.T__6);
-	            this.state = 167;
+	            this.state = 176;
 	            this.numberValue();
-	            this.state = 168;
+	            this.state = 177;
 	            this.match(FileDescParser.PART_SPLIT);
-	            this.state = 169;
+	            this.state = 178;
 	            this.numberValue();
-	            this.state = 170;
+	            this.state = 179;
 	            this.match(FileDescParser.T__7);
 	            break;
 	        default:
@@ -848,17 +864,17 @@ export default class FileDescParser extends antlr4.Parser {
 	    var _la = 0; // Token type
 	    try {
 	        this.enterOuterAlt(localctx, 1);
-	        this.state = 174;
+	        this.state = 183;
 	        this.match(FileDescParser.VAR);
-	        this.state = 179;
+	        this.state = 188;
 	        this._errHandler.sync(this);
 	        _la = this._input.LA(1);
 	        while(_la===4) {
-	            this.state = 175;
+	            this.state = 184;
 	            this.match(FileDescParser.T__3);
-	            this.state = 176;
+	            this.state = 185;
 	            this.match(FileDescParser.VAR);
-	            this.state = 181;
+	            this.state = 190;
 	            this._errHandler.sync(this);
 	            _la = this._input.LA(1);
 	        }
@@ -884,33 +900,33 @@ export default class FileDescParser extends antlr4.Parser {
 	    var _la = 0; // Token type
 	    try {
 	        this.enterOuterAlt(localctx, 1);
-	        this.state = 186; 
+	        this.state = 195; 
 	        this._errHandler.sync(this);
 	        _la = this._input.LA(1);
 	        do {
-	            this.state = 186;
+	            this.state = 195;
 	            this._errHandler.sync(this);
 	            switch(this._input.LA(1)) {
 	            case 9:
-	                this.state = 182;
+	                this.state = 191;
 	                this.varExpr();
 	                break;
 	            case 31:
-	                this.state = 183;
+	                this.state = 192;
 	                this.match(FileDescParser.VAR);
 	                break;
 	            case 30:
-	                this.state = 184;
-	                this.match(FileDescParser.NUMBER);
+	                this.state = 193;
+	                this.number();
 	                break;
 	            case 28:
-	                this.state = 185;
-	                this.match(FileDescParser.STRING);
+	                this.state = 194;
+	                this.string();
 	                break;
 	            default:
 	                throw new antlr4.error.NoViableAltException(this);
 	            }
-	            this.state = 188; 
+	            this.state = 197; 
 	            this._errHandler.sync(this);
 	            _la = this._input.LA(1);
 	        } while((((_la) & ~0x1f) == 0 && ((1 << _la) & 3489661440) !== 0));
@@ -936,25 +952,25 @@ export default class FileDescParser extends antlr4.Parser {
 	    var _la = 0; // Token type
 	    try {
 	        this.enterOuterAlt(localctx, 1);
-	        this.state = 192; 
+	        this.state = 201; 
 	        this._errHandler.sync(this);
 	        _la = this._input.LA(1);
 	        do {
-	            this.state = 192;
+	            this.state = 201;
 	            this._errHandler.sync(this);
 	            switch(this._input.LA(1)) {
 	            case 9:
-	                this.state = 190;
+	                this.state = 199;
 	                this.varExpr();
 	                break;
 	            case 31:
-	                this.state = 191;
+	                this.state = 200;
 	                this.match(FileDescParser.VAR);
 	                break;
 	            default:
 	                throw new antlr4.error.NoViableAltException(this);
 	            }
-	            this.state = 194; 
+	            this.state = 203; 
 	            this._errHandler.sync(this);
 	            _la = this._input.LA(1);
 	        } while(_la===9 || _la===31);
@@ -978,18 +994,18 @@ export default class FileDescParser extends antlr4.Parser {
 	    let localctx = new NumberValueContext(this, this._ctx, this.state);
 	    this.enterRule(localctx, 44, FileDescParser.RULE_numberValue);
 	    try {
-	        this.state = 198;
+	        this.state = 207;
 	        this._errHandler.sync(this);
 	        switch(this._input.LA(1)) {
 	        case 9:
 	            this.enterOuterAlt(localctx, 1);
-	            this.state = 196;
+	            this.state = 205;
 	            this.varExpr();
 	            break;
 	        case 30:
 	            this.enterOuterAlt(localctx, 2);
-	            this.state = 197;
-	            this.match(FileDescParser.NUMBER);
+	            this.state = 206;
+	            this.number();
 	            break;
 	        default:
 	            throw new antlr4.error.NoViableAltException(this);
@@ -1014,18 +1030,18 @@ export default class FileDescParser extends antlr4.Parser {
 	    let localctx = new ByteValueContext(this, this._ctx, this.state);
 	    this.enterRule(localctx, 46, FileDescParser.RULE_byteValue);
 	    try {
-	        this.state = 202;
+	        this.state = 211;
 	        this._errHandler.sync(this);
 	        switch(this._input.LA(1)) {
 	        case 9:
 	            this.enterOuterAlt(localctx, 1);
-	            this.state = 200;
+	            this.state = 209;
 	            this.varExpr();
 	            break;
 	        case 29:
 	            this.enterOuterAlt(localctx, 2);
-	            this.state = 201;
-	            this.match(FileDescParser.BYTE_VALUE);
+	            this.state = 210;
+	            this.byteData();
 	            break;
 	        default:
 	            throw new antlr4.error.NoViableAltException(this);
@@ -1051,11 +1067,11 @@ export default class FileDescParser extends antlr4.Parser {
 	    this.enterRule(localctx, 48, FileDescParser.RULE_varExpr);
 	    try {
 	        this.enterOuterAlt(localctx, 1);
-	        this.state = 204;
+	        this.state = 213;
 	        this.match(FileDescParser.T__8);
-	        this.state = 205;
+	        this.state = 214;
 	        this.calcExpr(0);
-	        this.state = 206;
+	        this.state = 215;
 	        this.match(FileDescParser.T__9);
 	    } catch (re) {
 	    	if(re instanceof antlr4.error.RecognitionException) {
@@ -1085,50 +1101,50 @@ export default class FileDescParser extends antlr4.Parser {
 	    var _la = 0; // Token type
 	    try {
 	        this.enterOuterAlt(localctx, 1);
-	        this.state = 215;
+	        this.state = 224;
 	        this._errHandler.sync(this);
 	        switch(this._input.LA(1)) {
 	        case 31:
-	            this.state = 209;
+	            this.state = 218;
 	            this.match(FileDescParser.VAR);
 	            break;
 	        case 30:
-	            this.state = 210;
-	            this.match(FileDescParser.NUMBER);
+	            this.state = 219;
+	            this.number();
 	            break;
 	        case 1:
-	            this.state = 211;
+	            this.state = 220;
 	            this.match(FileDescParser.T__0);
-	            this.state = 212;
+	            this.state = 221;
 	            this.calcExpr(0);
-	            this.state = 213;
+	            this.state = 222;
 	            this.match(FileDescParser.T__1);
 	            break;
 	        default:
 	            throw new antlr4.error.NoViableAltException(this);
 	        }
 	        this._ctx.stop = this._input.LT(-1);
-	        this.state = 225;
+	        this.state = 234;
 	        this._errHandler.sync(this);
-	        var _alt = this._interp.adaptivePredict(this._input,23,this._ctx)
+	        var _alt = this._interp.adaptivePredict(this._input,24,this._ctx)
 	        while(_alt!=2 && _alt!=antlr4.atn.ATN.INVALID_ALT_NUMBER) {
 	            if(_alt===1) {
 	                if(this._parseListeners!==null) {
 	                    this.triggerExitRuleEvent();
 	                }
 	                _prevctx = localctx;
-	                this.state = 223;
+	                this.state = 232;
 	                this._errHandler.sync(this);
-	                var la_ = this._interp.adaptivePredict(this._input,22,this._ctx);
+	                var la_ = this._interp.adaptivePredict(this._input,23,this._ctx);
 	                switch(la_) {
 	                case 1:
 	                    localctx = new CalcExprContext(this, _parentctx, _parentState);
 	                    this.pushNewRecursionContext(localctx, _startState, FileDescParser.RULE_calcExpr);
-	                    this.state = 217;
+	                    this.state = 226;
 	                    if (!( this.precpred(this._ctx, 2))) {
 	                        throw new antlr4.error.FailedPredicateException(this, "this.precpred(this._ctx, 2)");
 	                    }
-	                    this.state = 218;
+	                    this.state = 227;
 	                    _la = this._input.LA(1);
 	                    if(!(_la===21 || _la===22)) {
 	                    this._errHandler.recoverInline(this);
@@ -1137,18 +1153,18 @@ export default class FileDescParser extends antlr4.Parser {
 	                    	this._errHandler.reportMatch(this);
 	                        this.consume();
 	                    }
-	                    this.state = 219;
+	                    this.state = 228;
 	                    this.calcExpr(3);
 	                    break;
 
 	                case 2:
 	                    localctx = new CalcExprContext(this, _parentctx, _parentState);
 	                    this.pushNewRecursionContext(localctx, _startState, FileDescParser.RULE_calcExpr);
-	                    this.state = 220;
+	                    this.state = 229;
 	                    if (!( this.precpred(this._ctx, 1))) {
 	                        throw new antlr4.error.FailedPredicateException(this, "this.precpred(this._ctx, 1)");
 	                    }
-	                    this.state = 221;
+	                    this.state = 230;
 	                    _la = this._input.LA(1);
 	                    if(!(_la===23 || _la===24)) {
 	                    this._errHandler.recoverInline(this);
@@ -1157,15 +1173,15 @@ export default class FileDescParser extends antlr4.Parser {
 	                    	this._errHandler.reportMatch(this);
 	                        this.consume();
 	                    }
-	                    this.state = 222;
+	                    this.state = 231;
 	                    this.calcExpr(2);
 	                    break;
 
 	                } 
 	            }
-	            this.state = 227;
+	            this.state = 236;
 	            this._errHandler.sync(this);
-	            _alt = this._interp.adaptivePredict(this._input,23,this._ctx);
+	            _alt = this._interp.adaptivePredict(this._input,24,this._ctx);
 	        }
 
 	    } catch( error) {
@@ -1178,6 +1194,75 @@ export default class FileDescParser extends antlr4.Parser {
 		    }
 	    } finally {
 	        this.unrollRecursionContexts(_parentctx)
+	    }
+	    return localctx;
+	}
+
+
+
+	string() {
+	    let localctx = new StringContext(this, this._ctx, this.state);
+	    this.enterRule(localctx, 52, FileDescParser.RULE_string);
+	    try {
+	        this.enterOuterAlt(localctx, 1);
+	        this.state = 237;
+	        this.match(FileDescParser.STRING);
+	    } catch (re) {
+	    	if(re instanceof antlr4.error.RecognitionException) {
+		        localctx.exception = re;
+		        this._errHandler.reportError(this, re);
+		        this._errHandler.recover(this, re);
+		    } else {
+		    	throw re;
+		    }
+	    } finally {
+	        this.exitRule();
+	    }
+	    return localctx;
+	}
+
+
+
+	byteData() {
+	    let localctx = new ByteDataContext(this, this._ctx, this.state);
+	    this.enterRule(localctx, 54, FileDescParser.RULE_byteData);
+	    try {
+	        this.enterOuterAlt(localctx, 1);
+	        this.state = 239;
+	        this.match(FileDescParser.BYTE_VALUE);
+	    } catch (re) {
+	    	if(re instanceof antlr4.error.RecognitionException) {
+		        localctx.exception = re;
+		        this._errHandler.reportError(this, re);
+		        this._errHandler.recover(this, re);
+		    } else {
+		    	throw re;
+		    }
+	    } finally {
+	        this.exitRule();
+	    }
+	    return localctx;
+	}
+
+
+
+	number() {
+	    let localctx = new NumberContext(this, this._ctx, this.state);
+	    this.enterRule(localctx, 56, FileDescParser.RULE_number);
+	    try {
+	        this.enterOuterAlt(localctx, 1);
+	        this.state = 241;
+	        this.match(FileDescParser.NUMBER);
+	    } catch (re) {
+	    	if(re instanceof antlr4.error.RecognitionException) {
+		        localctx.exception = re;
+		        this._errHandler.reportError(this, re);
+		        this._errHandler.recover(this, re);
+		    } else {
+		    	throw re;
+		    }
+	    } finally {
+	        this.exitRule();
 	    }
 	    return localctx;
 	}
@@ -1227,13 +1312,13 @@ FileDescParser.RULE_fieldLine = 4;
 FileDescParser.RULE_commandLine = 5;
 FileDescParser.RULE_groupCommandExpr = 6;
 FileDescParser.RULE_whileCommand = 7;
-FileDescParser.RULE_findCommand = 8;
-FileDescParser.RULE_backFindCommand = 9;
-FileDescParser.RULE_ifCommand = 10;
-FileDescParser.RULE_loopCommand = 11;
-FileDescParser.RULE_backCommand = 12;
-FileDescParser.RULE_gotoCommand = 13;
-FileDescParser.RULE_nextCommand = 14;
+FileDescParser.RULE_ifCommand = 8;
+FileDescParser.RULE_loopCommand = 9;
+FileDescParser.RULE_backCommand = 10;
+FileDescParser.RULE_gotoCommand = 11;
+FileDescParser.RULE_nextCommand = 12;
+FileDescParser.RULE_findCommand = 13;
+FileDescParser.RULE_backFindCommand = 14;
 FileDescParser.RULE_multiByteValue = 15;
 FileDescParser.RULE_multiMatchDataValue = 16;
 FileDescParser.RULE_matchDataExpr = 17;
@@ -1245,6 +1330,9 @@ FileDescParser.RULE_numberValue = 22;
 FileDescParser.RULE_byteValue = 23;
 FileDescParser.RULE_varExpr = 24;
 FileDescParser.RULE_calcExpr = 25;
+FileDescParser.RULE_string = 26;
+FileDescParser.RULE_byteData = 27;
+FileDescParser.RULE_number = 28;
 
 export class ProgramContext extends antlr4.ParserRuleContext {
 
@@ -1593,76 +1681,6 @@ export class WhileCommandContext extends antlr4.ParserRuleContext {
 
 
 
-export class FindCommandContext extends antlr4.ParserRuleContext {
-
-    constructor(parser, parent, invokingState) {
-        if(parent===undefined) {
-            parent = null;
-        }
-        if(invokingState===undefined || invokingState===null) {
-            invokingState = -1;
-        }
-        super(parent, invokingState);
-        this.parser = parser;
-        this.ruleIndex = FileDescParser.RULE_findCommand;
-    }
-
-	FIND() {
-	    return this.getToken(FileDescParser.FIND, 0);
-	};
-
-	multiByteValue() {
-	    return this.getTypedRuleContext(MultiByteValueContext,0);
-	};
-
-	accept(visitor) {
-	    if ( visitor instanceof FileDescVisitor ) {
-	        return visitor.visitFindCommand(this);
-	    } else {
-	        return visitor.visitChildren(this);
-	    }
-	}
-
-
-}
-
-
-
-export class BackFindCommandContext extends antlr4.ParserRuleContext {
-
-    constructor(parser, parent, invokingState) {
-        if(parent===undefined) {
-            parent = null;
-        }
-        if(invokingState===undefined || invokingState===null) {
-            invokingState = -1;
-        }
-        super(parent, invokingState);
-        this.parser = parser;
-        this.ruleIndex = FileDescParser.RULE_backFindCommand;
-    }
-
-	BACKFIND() {
-	    return this.getToken(FileDescParser.BACKFIND, 0);
-	};
-
-	multiByteValue() {
-	    return this.getTypedRuleContext(MultiByteValueContext,0);
-	};
-
-	accept(visitor) {
-	    if ( visitor instanceof FileDescVisitor ) {
-	        return visitor.visitBackFindCommand(this);
-	    } else {
-	        return visitor.visitChildren(this);
-	    }
-	}
-
-
-}
-
-
-
 export class IfCommandContext extends antlr4.ParserRuleContext {
 
     constructor(parser, parent, invokingState) {
@@ -1842,6 +1860,76 @@ export class NextCommandContext extends antlr4.ParserRuleContext {
 
 
 
+export class FindCommandContext extends antlr4.ParserRuleContext {
+
+    constructor(parser, parent, invokingState) {
+        if(parent===undefined) {
+            parent = null;
+        }
+        if(invokingState===undefined || invokingState===null) {
+            invokingState = -1;
+        }
+        super(parent, invokingState);
+        this.parser = parser;
+        this.ruleIndex = FileDescParser.RULE_findCommand;
+    }
+
+	FIND() {
+	    return this.getToken(FileDescParser.FIND, 0);
+	};
+
+	multiByteValue() {
+	    return this.getTypedRuleContext(MultiByteValueContext,0);
+	};
+
+	accept(visitor) {
+	    if ( visitor instanceof FileDescVisitor ) {
+	        return visitor.visitFindCommand(this);
+	    } else {
+	        return visitor.visitChildren(this);
+	    }
+	}
+
+
+}
+
+
+
+export class BackFindCommandContext extends antlr4.ParserRuleContext {
+
+    constructor(parser, parent, invokingState) {
+        if(parent===undefined) {
+            parent = null;
+        }
+        if(invokingState===undefined || invokingState===null) {
+            invokingState = -1;
+        }
+        super(parent, invokingState);
+        this.parser = parser;
+        this.ruleIndex = FileDescParser.RULE_backFindCommand;
+    }
+
+	BACKFIND() {
+	    return this.getToken(FileDescParser.BACKFIND, 0);
+	};
+
+	multiByteValue() {
+	    return this.getTypedRuleContext(MultiByteValueContext,0);
+	};
+
+	accept(visitor) {
+	    if ( visitor instanceof FileDescVisitor ) {
+	        return visitor.visitBackFindCommand(this);
+	    } else {
+	        return visitor.visitChildren(this);
+	    }
+	}
+
+
+}
+
+
+
 export class MultiByteValueContext extends antlr4.ParserRuleContext {
 
     constructor(parser, parent, invokingState) {
@@ -1932,16 +2020,16 @@ export class MatchDataExprContext extends antlr4.ParserRuleContext {
         this.ruleIndex = FileDescParser.RULE_matchDataExpr;
     }
 
-	BYTE_VALUE() {
-	    return this.getToken(FileDescParser.BYTE_VALUE, 0);
+	byteData() {
+	    return this.getTypedRuleContext(ByteDataContext,0);
 	};
 
-	STRING() {
-	    return this.getToken(FileDescParser.STRING, 0);
+	string() {
+	    return this.getTypedRuleContext(StringContext,0);
 	};
 
-	NUMBER() {
-	    return this.getToken(FileDescParser.NUMBER, 0);
+	number() {
+	    return this.getTypedRuleContext(NumberContext,0);
 	};
 
 	accept(visitor) {
@@ -2075,29 +2163,27 @@ export class TextValueContext extends antlr4.ParserRuleContext {
 	};
 
 
-	NUMBER = function(i) {
-		if(i===undefined) {
-			i = null;
-		}
+	number = function(i) {
+	    if(i===undefined) {
+	        i = null;
+	    }
 	    if(i===null) {
-	        return this.getTokens(FileDescParser.NUMBER);
+	        return this.getTypedRuleContexts(NumberContext);
 	    } else {
-	        return this.getToken(FileDescParser.NUMBER, i);
+	        return this.getTypedRuleContext(NumberContext,i);
 	    }
 	};
 
-
-	STRING = function(i) {
-		if(i===undefined) {
-			i = null;
-		}
+	string = function(i) {
+	    if(i===undefined) {
+	        i = null;
+	    }
 	    if(i===null) {
-	        return this.getTokens(FileDescParser.STRING);
+	        return this.getTypedRuleContexts(StringContext);
 	    } else {
-	        return this.getToken(FileDescParser.STRING, i);
+	        return this.getTypedRuleContext(StringContext,i);
 	    }
 	};
-
 
 	accept(visitor) {
 	    if ( visitor instanceof FileDescVisitor ) {
@@ -2180,8 +2266,8 @@ export class NumberValueContext extends antlr4.ParserRuleContext {
 	    return this.getTypedRuleContext(VarExprContext,0);
 	};
 
-	NUMBER() {
-	    return this.getToken(FileDescParser.NUMBER, 0);
+	number() {
+	    return this.getTypedRuleContext(NumberContext,0);
 	};
 
 	accept(visitor) {
@@ -2215,8 +2301,8 @@ export class ByteValueContext extends antlr4.ParserRuleContext {
 	    return this.getTypedRuleContext(VarExprContext,0);
 	};
 
-	BYTE_VALUE() {
-	    return this.getToken(FileDescParser.BYTE_VALUE, 0);
+	byteData() {
+	    return this.getTypedRuleContext(ByteDataContext,0);
 	};
 
 	accept(visitor) {
@@ -2281,8 +2367,8 @@ export class CalcExprContext extends antlr4.ParserRuleContext {
 	    return this.getToken(FileDescParser.VAR, 0);
 	};
 
-	NUMBER() {
-	    return this.getToken(FileDescParser.NUMBER, 0);
+	number() {
+	    return this.getTypedRuleContext(NumberContext,0);
 	};
 
 	calcExpr = function(i) {
@@ -2325,6 +2411,99 @@ export class CalcExprContext extends antlr4.ParserRuleContext {
 
 
 
+export class StringContext extends antlr4.ParserRuleContext {
+
+    constructor(parser, parent, invokingState) {
+        if(parent===undefined) {
+            parent = null;
+        }
+        if(invokingState===undefined || invokingState===null) {
+            invokingState = -1;
+        }
+        super(parent, invokingState);
+        this.parser = parser;
+        this.ruleIndex = FileDescParser.RULE_string;
+    }
+
+	STRING() {
+	    return this.getToken(FileDescParser.STRING, 0);
+	};
+
+	accept(visitor) {
+	    if ( visitor instanceof FileDescVisitor ) {
+	        return visitor.visitString(this);
+	    } else {
+	        return visitor.visitChildren(this);
+	    }
+	}
+
+
+}
+
+
+
+export class ByteDataContext extends antlr4.ParserRuleContext {
+
+    constructor(parser, parent, invokingState) {
+        if(parent===undefined) {
+            parent = null;
+        }
+        if(invokingState===undefined || invokingState===null) {
+            invokingState = -1;
+        }
+        super(parent, invokingState);
+        this.parser = parser;
+        this.ruleIndex = FileDescParser.RULE_byteData;
+    }
+
+	BYTE_VALUE() {
+	    return this.getToken(FileDescParser.BYTE_VALUE, 0);
+	};
+
+	accept(visitor) {
+	    if ( visitor instanceof FileDescVisitor ) {
+	        return visitor.visitByteData(this);
+	    } else {
+	        return visitor.visitChildren(this);
+	    }
+	}
+
+
+}
+
+
+
+export class NumberContext extends antlr4.ParserRuleContext {
+
+    constructor(parser, parent, invokingState) {
+        if(parent===undefined) {
+            parent = null;
+        }
+        if(invokingState===undefined || invokingState===null) {
+            invokingState = -1;
+        }
+        super(parent, invokingState);
+        this.parser = parser;
+        this.ruleIndex = FileDescParser.RULE_number;
+    }
+
+	NUMBER() {
+	    return this.getToken(FileDescParser.NUMBER, 0);
+	};
+
+	accept(visitor) {
+	    if ( visitor instanceof FileDescVisitor ) {
+	        return visitor.visitNumber(this);
+	    } else {
+	        return visitor.visitChildren(this);
+	    }
+	}
+
+
+}
+
+
+
 
 FileDescParser.ProgramContext = ProgramContext; 
 FileDescParser.FileDataContext = FileDataContext; 
@@ -2334,13 +2513,13 @@ FileDescParser.FieldLineContext = FieldLineContext;
 FileDescParser.CommandLineContext = CommandLineContext; 
 FileDescParser.GroupCommandExprContext = GroupCommandExprContext; 
 FileDescParser.WhileCommandContext = WhileCommandContext; 
-FileDescParser.FindCommandContext = FindCommandContext; 
-FileDescParser.BackFindCommandContext = BackFindCommandContext; 
 FileDescParser.IfCommandContext = IfCommandContext; 
 FileDescParser.LoopCommandContext = LoopCommandContext; 
 FileDescParser.BackCommandContext = BackCommandContext; 
 FileDescParser.GotoCommandContext = GotoCommandContext; 
 FileDescParser.NextCommandContext = NextCommandContext; 
+FileDescParser.FindCommandContext = FindCommandContext; 
+FileDescParser.BackFindCommandContext = BackFindCommandContext; 
 FileDescParser.MultiByteValueContext = MultiByteValueContext; 
 FileDescParser.MultiMatchDataValueContext = MultiMatchDataValueContext; 
 FileDescParser.MatchDataExprContext = MatchDataExprContext; 
@@ -2352,3 +2531,6 @@ FileDescParser.NumberValueContext = NumberValueContext;
 FileDescParser.ByteValueContext = ByteValueContext; 
 FileDescParser.VarExprContext = VarExprContext; 
 FileDescParser.CalcExprContext = CalcExprContext; 
+FileDescParser.StringContext = StringContext; 
+FileDescParser.ByteDataContext = ByteDataContext; 
+FileDescParser.NumberContext = NumberContext; 

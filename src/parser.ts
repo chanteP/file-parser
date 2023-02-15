@@ -5,7 +5,7 @@ import FileDescLexer from './grammar/FileDescLexer';
 import FileDescVisitor from './grammar/FileDescVisitor';
 import FileDescParser from './grammar/FileDescParser';
 
-export function parse(fileFormat: string, file?: File) {
+export async function parse(fileFormat: string, file?: File) {
     const chars = new antlr4.InputStream(fileFormat);
     const lexer = new FileDescLexer(chars);
     const tokens = new antlr4.CommonTokenStream(lexer);
@@ -28,6 +28,8 @@ export function parse(fileFormat: string, file?: File) {
     );
 
     tree.accept(new FileDescVisitor(data));
+
+    await data.ready;
 
     return data;
 }
