@@ -32,7 +32,7 @@ import {
     StringValueContext,
     CalcExprContext,
 } from './FileDescParser';
-import { getValueFromExpr, packValueOfFunction } from '../utils';
+import {} from '../utils';
 
 // This class defines a complete generic visitor for a parse tree produced by FileDescParser.
 
@@ -50,22 +50,128 @@ type OffsetEndPatternResult = {
 };
 type OffsetPatternResult = OffsetLengthPatternResult | OffsetEndPatternResult;
 
+type ScopeContext = GroupLineContext | FileDataContext;
+type ChildContext = antlr4.ParserRuleContext;
+
+interface ScopeInfo {
+    level: number;
+    context: ScopeContext;
+    children: ChildContext[];
+}
+
+enum ParseAction {
+    PARSE = 0,
+    COLLECT = 1,
+}
+
+type GroupCommandFunction = () => GroupRecord;
+
 export default class FileDescVisitor extends antlr4.tree.ParseTreeVisitor {
     private file: FileData;
+
+    private cacheScopeContext: WeakMap<ScopeContext, ChildContext[]> = new WeakMap();
+    private scopeStack: ScopeInfo[] = [];
+    private get currentScope() {
+        return this.scopeStack[this.scopeStack.length - 1]!;
+    }
+
+    // 用来判断当前是收集scope还是解析line
+    private parseStatus: ParseAction = ParseAction.COLLECT;
+    private get isCollecting() {
+        return this.parseStatus === ParseAction.COLLECT;
+    }
 
     constructor(fileData: FileData) {
         super();
         this.file = fileData;
     }
 
+    private log(...args: any[]) {
+        console.log('[FileDesc]', ...args);
+    }
+
+    // scope ----------------------------------------------------------------
+    private addScope(scopeContext: ScopeContext, level: number) {
+        const cacheScopeContext = this.cacheScopeContext;
+        if (cacheScopeContext.has(scopeContext)) {
+            console.warn('group scope exists');
+            return;
+        }
+        cacheScopeContext.set(scopeContext, []);
+
+        while (this.currentScope) {
+            if (level <= this.currentScope.level) {
+                this.scopeStack.pop();
+            } else {
+                break;
+            }
+        }
+
+        if (this.currentScope && this.isCollecting) {
+            this.pushChildContext(scopeContext);
+        }
+
+        this.scopeStack.push({
+            level,
+            context: scopeContext,
+            get children() {
+                return cacheScopeContext.get(scopeContext)!;
+            },
+        });
+    }
+
+    private pushChildContext(ctx: ChildContext) {
+        if (!this.isCollecting) {
+            return;
+        }
+        console.warn(ctx.getText(), this.currentScope.context);
+        this.cacheScopeContext.get(this.currentScope.context)!.push(ctx);
+    }
+
+    private visitCollectContextChildren(ctx: ChildContext) {
+        const children = this.cacheScopeContext.get(ctx as ScopeContext) ?? [];
+        return children.map((child) => {
+            this.log('exec: ', child.getText());
+            this.visit(child);
+        });
+    }
+
+    private drawScope(ctx?: ScopeContext, tab = '|---') {
+        if (!ctx) {
+            ctx = this.scopeStack[0]!.context;
+        }
+        const nextTab = tab + '|---';
+
+        this.cacheScopeContext.get(ctx)?.forEach((child) => {
+            this.log(tab, child.getText());
+            this.drawScope(child as ScopeContext, nextTab);
+        });
+    }
+
+    // ----------------------------------------------------------------
+
     // Visit a parse tree produced by FileDescParser#file.
     visitProgram(ctx: ProgramContext) {
-        return this.visitChildren(ctx);
+        this.visitChildren(ctx);
     }
 
     // Visit a parse tree produced by FileDescParser#fileData.
     visitFileData(ctx: FileDataContext) {
-        return this.visitChildren(ctx);
+        this.parseStatus = ParseAction.COLLECT;
+        this.addScope(ctx, 0);
+        this.visitChildren(ctx);
+
+        this.drawScope();
+
+        if (this.scopeStack.length > 1 && !this.scopeStack[0]?.children.includes(this.scopeStack[1]?.context!)) {
+            console.error('parse error!!! scope collect failed!!!');
+        }
+
+        this.scopeStack = [];
+        this.log('scope------', this.scopeStack);
+
+        this.parseStatus = ParseAction.PARSE;
+        this.visitCollectContextChildren(ctx);
     }
     // line ----------------------------------------------------------------
 
@@ -81,21 +187,42 @@ export default class FileDescVisitor extends antlr4.tree.ParseTreeVisitor {
             protoChildren[0] instanceof GroupCommandExprContext ? [...protoChildren] : [undefined, ...protoChildren];
         const [command, markData, nameData] = children;
 
-        const groupData: GroupRecord = {
-            type: 'group',
-            level: markData.getText().length,
-            name: nameData.getText() ?? '',
-            content: [],
-        };
-        // 得先push再操作command。command依赖group栈处理
-        this.file.push(groupData);
-        console.log('group---', ctx.getText(), groupData);
+        const level = markData.getText().length;
 
-        command && this.visitGroupCommandExpr(command);
+        if (this.isCollecting) {
+            this.addScope(ctx, level);
+            return;
+        }
+
+        const parseGroupData: GroupCommandFunction = () => {
+            const groupData: GroupRecord = {
+                type: 'group',
+                level,
+                name: nameData.getText() ?? '',
+                content: [],
+            };
+            // 得先push再操作command。command依赖group栈处理
+            this.file.push(groupData);
+            this.log('group---', ctx.getText(), groupData);
+
+            this.visitCollectContextChildren(ctx);
+            return groupData;
+        };
+
+        if (command) {
+            this.visitGroupCommandExpr(command, parseGroupData);
+        } else {
+            parseGroupData();
+        }
     }
 
     // Visit a parse tree produced by FileDescParser#fieldLine.
     visitFieldLine(ctx: FieldLineContext) {
+        if (this.isCollecting) {
+            this.pushChildContext(ctx);
+            return;
+        }
+
         const fieldNodeData = this.visitChildren(ctx);
 
         const [name, s1, offsetPatternData, s2, formatter = []] = fieldNodeData;
@@ -137,29 +264,79 @@ export default class FileDescVisitor extends antlr4.tree.ParseTreeVisitor {
 
         this.file.push(fieldData);
 
-        console.log('field---', ctx.getText(), fieldData);
+        this.log('field---', ctx.getText(), fieldData);
+    }
+
+    // Visit a parse tree produced by FileDescParser#commandLine.
+    visitCommandLine(ctx: CommandLineContext) {
+        if (this.isCollecting) {
+            this.pushChildContext(ctx);
+            return;
+        }
+
+        return this.visitChildren(ctx);
     }
 
     // command ----------------------------------------------------------------
 
-    // Visit a parse tree produced by FileDescParser#commandLine.
-    visitCommandLine(ctx: CommandLineContext) {
-        return this.visitChildren(ctx);
-    }
-
     // Visit a parse tree produced by FileDescParser#groupCommandExpr.
-    visitGroupCommandExpr(ctx: GroupCommandExprContext) {
-        return this.visitChildren(ctx);
+    visitGroupCommandExpr(ctx: GroupCommandExprContext, execGroup: GroupCommandFunction) {
+        const commandContext = ctx.children?.[0];
+        switch (true) {
+            case commandContext instanceof WhileCommandContext:
+                this.visitWhileCommand(commandContext, execGroup);
+                break;
+            case commandContext instanceof IfCommandContext:
+                this.visitIfCommand(commandContext, execGroup);
+                break;
+            case commandContext instanceof LoopCommandContext:
+                this.visitLoopCommand(commandContext, execGroup);
+                break;
+        }
     }
 
     // Visit a parse tree produced by FileDescParser#whileCommand.
-    visitWhileCommand(ctx: WhileCommandContext) {
-        this.file.currentScope!.loop = () => {
-            return true;
+    visitWhileCommand(ctx: WhileCommandContext, execGroup: GroupCommandFunction) {
+        const condition = () => {
+            const [whileMark, lb, expectValue, rb] = this.visitChildren(ctx);
+            return false;
         };
-        this.file.currentScope!.optional = () => true;
-        return this.visitChildren(ctx);
+
+        while (condition()) {
+            const group = execGroup();
+            group.loop = true;
+            group.optional = true;
+        }
     }
+
+    // Visit a parse tree produced by FileDescParser#ifCommand.
+    visitIfCommand(ctx: IfCommandContext, execGroup: GroupCommandFunction) {
+        const condition = () => {
+            const [ifMark, lb, varValue, isMark, expectValue, rb] = this.visitChildren(ctx);
+            const data = this.file.getVar(varValue);
+            // debugger
+            [ifMark, lb, varValue, isMark, expectValue, rb]
+            return false;
+        };
+
+        if (condition()) {
+            const group = execGroup();
+            group.optional = true;
+        }
+    }
+
+    // Visit a parse tree produced by FileDescParser#loopCommand.
+    visitLoopCommand(ctx: LoopCommandContext, execGroup: GroupCommandFunction) {
+        const [loopMark, lb, loopValue, rb] = this.visitChildren(ctx);
+        let loopCount = +loopValue || 0;
+
+        while (loopCount-- > 0) {
+            const group = execGroup();
+            group.loop = true;
+        }
+    }
+
+    // ----------------
 
     // Visit a parse tree produced by FileDescParser#findCommand.
     visitFindCommand(ctx: FindCommandContext) {
@@ -170,19 +347,6 @@ export default class FileDescVisitor extends antlr4.tree.ParseTreeVisitor {
     visitBackFindCommand(ctx: BackFindCommandContext) {
         return this.visitChildren(ctx);
     }
-
-    // Visit a parse tree produced by FileDescParser#ifCommand.
-    visitIfCommand(ctx: IfCommandContext) {
-        this.file.currentScope!.optional = () => true;
-        return this.visitChildren(ctx);
-    }
-
-    // Visit a parse tree produced by FileDescParser#loopCommand.
-    visitLoopCommand(ctx: LoopCommandContext) {
-        this.file.currentScope!.loop = () => true;
-        return this.visitChildren(ctx);
-    }
-
     // Visit a parse tree produced by FileDescParser#backCommand.
     visitBackCommand(ctx: BackCommandContext) {
         return this.visitChildren(ctx);

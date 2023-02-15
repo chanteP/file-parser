@@ -4,8 +4,8 @@ export interface GroupRecord {
     name: string;
     content: FileRecords[];
 
-    optional?: () => boolean;
-    loop?: (count: number) => boolean;
+    optional?: boolean;
+    loop?: boolean;
 }
 
 export enum DataOrder {
@@ -68,12 +68,8 @@ export class FileData {
 
     // record ------------------------------------------------------------
     private addRecord(record: FileRecords) {
-        const scope = this.currentScope;
-        if (scope) {
-            scope.content.push(record);
-        } else {
-            this.data.push(record);
-        }
+        const scope = this.currentScope?.content ?? this.data;
+        scope.push(record);
     }
 
     push(record: FileRecords) {

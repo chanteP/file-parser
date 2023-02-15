@@ -25,20 +25,19 @@ groupCommandExpr: whileCommand | ifCommand | loopCommand;
 
 // command ---------------------------------
 whileCommand: WHILE '(' multiByteValue ')';
-findCommand: FIND '(' multiByteValue ')';
-backFindCommand: BACKFIND '(' multiByteValue ')';
-
 ifCommand: IF '(' VAR 'is' multiMatchDataValue ')';
 loopCommand: LOOP '(' numberValue ')';
 
 backCommand: BACK '(' numberValue ')';
 gotoCommand: GOTO '(' numberValue ')';
 nextCommand: NEXT '(' numberValue ')';
+findCommand: FIND '(' multiByteValue ')';
+backFindCommand: BACKFIND '(' multiByteValue ')';
 
 // basic expression ---------------------------------
 multiByteValue: byteValue ('|' byteValue)*;
 multiMatchDataValue: matchDataExpr ('|' matchDataExpr)*;
-matchDataExpr: BYTE_VALUE | STRING | NUMBER;
+matchDataExpr: BYTE_VALUE | string | NUMBER;
 
 offsetExpr: ('>' | '<')? (
 		numberValue
@@ -48,7 +47,7 @@ offsetExpr: ('>' | '<')? (
 dataFormatExpr: VAR ('|' VAR)*;
 
 // basic value ---------------------------------
-textValue: (varExpr | VAR | NUMBER | STRING)+;
+textValue: (varExpr | VAR | NUMBER | string)+;
 stringValue: (varExpr | VAR)+;
 numberValue: varExpr | NUMBER;
 byteValue: varExpr | BYTE_VALUE;
@@ -61,6 +60,8 @@ calcExpr:
 	| calcExpr (ASTERISK | SLASH) calcExpr
 	| calcExpr (PLUS | MINUS) calcExpr;
 
+string: STRING;
+
 /**
  lexer ------------------------------------------
  */
@@ -70,6 +71,7 @@ fragment ALL_LETTER: LETTER | DIGIT;
 fragment ID: LETTER ALL_LETTER*;
 fragment DIGIT: [0-9];
 fragment HEX: [a-fA-F0-9];
+fragment GROUP_SYMBOL: '#';
 
 BLOCK_COMMENT: '/*' .*? '*/' -> channel(HIDDEN);
 LINE_COMMENT: '//' ~[\r\n]* -> channel(HIDDEN);
@@ -91,7 +93,7 @@ PLUS: '+';
 MINUS: '-';
 
 PART_SPLIT: ',';
-GROUP_MARK: '#'+;
+GROUP_MARK: GROUP_SYMBOL+;
 
 NEWLINE: ('\r'? '\n' | '\r')+;
 
