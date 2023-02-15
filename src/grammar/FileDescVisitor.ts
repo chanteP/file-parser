@@ -32,7 +32,7 @@ import {
     StringValueContext,
     CalcExprContext,
 } from './FileDescParser';
-import { inMultiMatchDataValue, isMultiByteValueWithOffset } from '../utils';
+import { inMultiMatchDataValue, isMultiByteValueWithOffset, isOddFilter } from '../utils';
 
 // This class defines a complete generic visitor for a parse tree produced by FileDescParser.
 
@@ -400,17 +400,17 @@ export default class FileDescVisitor extends antlr4.tree.ParseTreeVisitor {
 
     // Visit a parse tree produced by FileDescParser#multiByteValue.
     visitMultiByteValue(ctx: MultiByteValueContext) {
-        return this.visitChildren(ctx);
+        return this.visitChildren(ctx).filter(isOddFilter);
     }
 
     // Visit a parse tree produced by FileDescParser#multiMatchDataValue.
     visitMultiMatchDataValue(ctx: MultiMatchDataValueContext) {
-        return this.visitChildren(ctx);
+        return this.visitChildren(ctx).filter(isOddFilter);
     }
 
     // Visit a parse tree produced by FileDescParser#matchDataExpr.
     visitMatchDataExpr(ctx: MatchDataExprContext) {
-        return this.visitChildren(ctx);
+        return this.visitChildren(ctx)[0];
     }
 
     // Visit a parse tree produced by FileDescParser#offsetExpr.
@@ -443,7 +443,7 @@ export default class FileDescVisitor extends antlr4.tree.ParseTreeVisitor {
 
     // Visit a parse tree produced by FileDescParser#dataFormatExpr.
     visitDataFormatExpr(ctx: DataFormatExprContext) {
-        return this.visitChildren(ctx);
+        return this.visitChildren(ctx).filter(isOddFilter);
     }
 
     // basic value ----------------------------------------------------------------
@@ -459,12 +459,6 @@ export default class FileDescVisitor extends antlr4.tree.ParseTreeVisitor {
 
     // Visit a parse tree produced by FileDescParser#byteValue.
     visitByteValue(ctx: ByteValueContext) {
-        if (ctx.children[0].getText === '[') {
-            const valueList = this.visitChildren(ctx).slice(1, -1);
-            debugger;
-            // TODO
-            return valueList;
-        }
         return this.visitChildren(ctx)[0];
     }
 
