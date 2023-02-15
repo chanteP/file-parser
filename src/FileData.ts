@@ -1,4 +1,4 @@
-import { createDefer } from './utils';
+import { createDefer, reverseArrayBuffer } from './utils';
 
 export interface GroupRecord {
     type: 'group';
@@ -112,7 +112,11 @@ export class FileData {
         if (!this.file) {
             return null;
         }
-        return this.file.slice(start, end).arrayBuffer();
+        const data = await this.file.slice(start, end).arrayBuffer();
+        if (order === DataOrder.BE) {
+            return reverseArrayBuffer(data);
+        }
+        return data;
     }
 
     pipeDataFormatter(data: ArrayBuffer | null, dataFormatterKeys: string[]): FieldValue {
