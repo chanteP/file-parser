@@ -26,6 +26,9 @@ export interface FieldRecord {
     shouldMove: boolean;
     order: DataOrder;
     formatter: string[];
+
+    optional?: boolean;
+    loop?: boolean;
 }
 
 export interface CommandRecord {

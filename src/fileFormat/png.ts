@@ -10,7 +10,7 @@ CRLF, 2
 NEND, 1
 LF, 1
 
-loop(999)#chunk
+loop(): #chunk
 length, >4, number
 type, 4, string
 data, \${length}

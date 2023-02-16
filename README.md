@@ -36,9 +36,9 @@ fieldName, length, dataFormat | dataFormat
 \${fieldValueWithDataFormat + offset}
 \${fieldValueWithDataFormat - offset}
 
-while(byteValue)# group
-if(var, matchData)# group
-loop(numberValue)# group
+while(byteValue): # group
+if(var, matchData): # group
+loop(numberValue): # group
 
 back(numberValue)
 next(numberValue)

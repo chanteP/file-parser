@@ -10,9 +10,11 @@ fileData: line (NEWLINE line)*;
 
 line: fieldLine | commandLine | groupLine;
 
-groupLine: groupCommandExpr? GROUP_TITLE;
+groupLine: scopeCommandExpr? GROUP_TITLE;
 fieldLine:
-	VAR PART_SPLIT offsetExpr (PART_SPLIT dataFormatExpr)?;
+	scopeCommandExpr? VAR PART_SPLIT offsetExpr (
+		PART_SPLIT dataFormatExpr
+	)?;
 
 commandLine:
 	backCommand
@@ -21,12 +23,12 @@ commandLine:
 	| findCommand
 	| backFindCommand;
 
-groupCommandExpr: whileCommand | ifCommand | loopCommand;
+scopeCommandExpr: (whileCommand | ifCommand | loopCommand) ':';
 
 // command ---------------------------------
 whileCommand: WHILE '(' multiByteValue ')';
 ifCommand: IF '(' VAR 'is' multiMatchDataValue ')';
-loopCommand: LOOP '(' numberValue ')';
+loopCommand: LOOP '(' numberValue? ')';
 
 findCommand: FIND '(' multiByteValue ')';
 backCommand: BACK '(' numberValue ')';
@@ -46,8 +48,7 @@ offsetExpr: ('>' | '<')? (
 
 dataFormatExpr: VAR ('|' VAR)*;
 
-// basic value ---------------------------------
-// textValue: (varExpr | VAR | number | string)+;
+// basic value --------------------------------- textValue: (varExpr | VAR | number | string)+;
 stringValue: (varExpr | VAR)+;
 numberValue: varExpr | number;
 byteValue: varExpr | byteData;

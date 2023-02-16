@@ -11,7 +11,7 @@ import {
     GroupLineContext,
     FieldLineContext,
     CommandLineContext,
-    GroupCommandExprContext,
+    ScopeCommandExprContext,
     WhileCommandContext,
     FindCommandContext,
     BackFindCommandContext,
@@ -63,7 +63,7 @@ enum ParseAction {
     COLLECT = 1,
 }
 
-type GroupCommandFunction = () => Promise<GroupRecord>;
+type ScopeCommandFunction<T> = () => Promise<T>;
 
 export default class FileDescVisitor extends antlr4.tree.ParseTreeVisitor {
     private file: FileData;
@@ -199,7 +199,7 @@ export default class FileDescVisitor extends antlr4.tree.ParseTreeVisitor {
     async visitGroupLine(ctx: GroupLineContext) {
         const protoChildren = ctx.children;
         const children =
-            protoChildren[0] instanceof GroupCommandExprContext ? [...protoChildren] : [undefined, ...protoChildren];
+            protoChildren[0] instanceof ScopeCommandExprContext ? [...protoChildren] : [undefined, ...protoChildren];
         const [command, nameData] = children;
 
         const [match, mark, name] = /(#+)(.*)/.exec(nameData.getText()) ?? [];
@@ -211,7 +211,7 @@ export default class FileDescVisitor extends antlr4.tree.ParseTreeVisitor {
             return;
         }
 
-        const parseGroupData: GroupCommandFunction = async () => {
+        const parseGroupData: ScopeCommandFunction<GroupRecord> = async () => {
             const groupData: GroupRecord = {
                 type: 'group',
                 level,
@@ -227,7 +227,7 @@ export default class FileDescVisitor extends antlr4.tree.ParseTreeVisitor {
         };
 
         if (command) {
-            await this.visitGroupCommandExpr(command, parseGroupData);
+            await this.visitScopeCommandExpr(command, parseGroupData);
         } else {
             await parseGroupData();
         }
@@ -240,48 +240,66 @@ export default class FileDescVisitor extends antlr4.tree.ParseTreeVisitor {
             return;
         }
 
-        const fieldNodeData = this.visitChildren(ctx);
+        const protoChildren = ctx.children;
+        const children =
+            protoChildren[0] instanceof ScopeCommandExprContext ? [...protoChildren] : [undefined, ...protoChildren];
+        const [command, ...restData] = children;
+
+        const fieldNodeData = this.visit(restData);
 
         const [name, s1, offsetPatternData, s2, formatter = []] = fieldNodeData;
 
         const offsetPattern: OffsetPatternResult = offsetPatternData;
         const { shouldMove, order, offset } = offsetPattern;
 
-        const fieldData: FieldRecord = {
-            type: 'field',
-            name,
-            offset,
-            order,
-            shouldMove,
-            data: null,
-            value: undefined,
-            length,
-            formatter,
+        const parseFieldData: ScopeCommandFunction<FieldRecord> = async () => {
+            const fieldData: FieldRecord = {
+                type: 'field',
+                name,
+                offset,
+                order,
+                shouldMove,
+                data: null,
+                value: undefined,
+                length,
+                formatter,
+            };
+
+            if ('length' in offsetPattern) {
+                fieldData.length = offsetPattern.length;
+                fieldData.offset = this.file.pointer;
+
+                fieldData.data = await this.file.getData(
+                    fieldData.offset,
+                    fieldData.offset + Number(fieldData.length),
+                    fieldData.order,
+                );
+                this.file.move(Number(fieldData.length));
+            } else {
+                fieldData.offset = offset;
+                fieldData.end = offsetPattern.end;
+
+                fieldData.data = await this.file.getData(
+                    Number(fieldData.offset),
+                    Number(fieldData.end),
+                    fieldData.order,
+                );
+            }
+
+            const value = this.file.pipeDataFormatter(fieldData, formatter);
+            fieldData.value = value;
+
+            this.file.push(fieldData);
+
+            this.log('field---', ctx.getText(), fieldData);
+            return fieldData;
         };
 
-        if ('length' in offsetPattern) {
-            fieldData.length = offsetPattern.length;
-            fieldData.offset = this.file.pointer;
-
-            fieldData.data = await this.file.getData(
-                fieldData.offset,
-                fieldData.offset + Number(fieldData.length),
-                fieldData.order,
-            );
-            this.file.move(Number(fieldData.length));
+        if (command) {
+            await this.visitScopeCommandExpr(command, parseFieldData);
         } else {
-            fieldData.offset = offset;
-            fieldData.end = offsetPattern.end;
-
-            fieldData.data = await this.file.getData(Number(fieldData.offset), Number(fieldData.end), fieldData.order);
+            await parseFieldData();
         }
-
-        const value = this.file.pipeDataFormatter(fieldData, formatter);
-        fieldData.value = value;
-
-        this.file.push(fieldData);
-
-        this.log('field---', ctx.getText(), fieldData);
     }
 
     // Visit a parse tree produced by FileDescParser#commandLine.
@@ -312,23 +330,26 @@ export default class FileDescVisitor extends antlr4.tree.ParseTreeVisitor {
     // command ----------------------------------------------------------------
 
     // Visit a parse tree produced by FileDescParser#groupCommandExpr.
-    async visitGroupCommandExpr(ctx: GroupCommandExprContext, execGroup: GroupCommandFunction) {
+    async visitScopeCommandExpr(
+        ctx: ScopeCommandExprContext,
+        execRecord: ScopeCommandFunction<GroupRecord | FieldRecord>,
+    ) {
         const commandContext = ctx.children?.[0];
         switch (true) {
             case commandContext instanceof WhileCommandContext:
-                await this.visitWhileCommand(commandContext, execGroup);
+                await this.visitWhileCommand(commandContext, execRecord);
                 break;
             case commandContext instanceof IfCommandContext:
-                await this.visitIfCommand(commandContext, execGroup);
+                await this.visitIfCommand(commandContext, execRecord);
                 break;
             case commandContext instanceof LoopCommandContext:
-                await this.visitLoopCommand(commandContext, execGroup);
+                await this.visitLoopCommand(commandContext, execRecord);
                 break;
         }
     }
 
     // Visit a parse tree produced by FileDescParser#whileCommand.
-    async visitWhileCommand(ctx: WhileCommandContext, execGroup: GroupCommandFunction) {
+    async visitWhileCommand(ctx: WhileCommandContext, execRecord: ScopeCommandFunction<GroupRecord | FieldRecord>) {
         let once = 1;
         let maxLoopLimit = this.file.maxLoopLimit;
 
@@ -348,14 +369,14 @@ export default class FileDescVisitor extends antlr4.tree.ParseTreeVisitor {
         };
 
         while (await condition()) {
-            const group = await execGroup();
+            const group = await execRecord();
             group.loop = true;
             group.optional = true;
         }
     }
 
     // Visit a parse tree produced by FileDescParser#ifCommand.
-    async visitIfCommand(ctx: IfCommandContext, execGroup: GroupCommandFunction) {
+    async visitIfCommand(ctx: IfCommandContext, execRecord: ScopeCommandFunction<GroupRecord | FieldRecord>) {
         const condition = () => {
             if (!this.file.hasFile()) {
                 return true;
@@ -366,15 +387,25 @@ export default class FileDescVisitor extends antlr4.tree.ParseTreeVisitor {
         };
 
         if (condition()) {
-            const group = await execGroup();
+            const group = await execRecord();
             group.optional = true;
         }
     }
 
     // Visit a parse tree produced by FileDescParser#loopCommand.
-    async visitLoopCommand(ctx: LoopCommandContext, execGroup: GroupCommandFunction) {
+    async visitLoopCommand(ctx: LoopCommandContext, execRecord: ScopeCommandFunction<GroupRecord | FieldRecord>) {
         const [loopMark, lb, loopValue, rb] = this.visitChildren(ctx);
-        let loopCount = this.file.hasFile() ? +loopValue || 0 : 1;
+        let loopCount = 1;
+
+        if (this.file.hasFile()) {
+            if (!rb) {
+                // loop()
+                loopCount = this.file.maxLoopLimit;
+            } else {
+                // loop(value)
+                loopCount = +loopValue || 0;
+            }
+        }
 
         if (loopCount > this.file.maxLoopLimit) {
             console.warn(`<while> reach max loop limit:${this.file.maxLoopLimit}`);
@@ -384,7 +415,7 @@ export default class FileDescVisitor extends antlr4.tree.ParseTreeVisitor {
             if (this.file.isEnd()) {
                 break;
             }
-            const group = await execGroup();
+            const group = await execRecord();
             group.loop = true;
         }
     }
