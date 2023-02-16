@@ -5,6 +5,7 @@ import { parse } from '../src';
 const fileFormat = `
 #header
 magic,4, string
+find([02 00 00 00])
 version,4, number
 length,4, number
 

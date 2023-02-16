@@ -77,7 +77,7 @@ export function isMultiByteValueWithOffset(
             if (currentOffset + length >= data.byteLength) {
                 return false;
             }
-            return isByteValue(data.slice(currentOffset, length), matchDataValue);
+            return isByteValue(data.slice(currentOffset, currentOffset + length), matchDataValue);
         });
         if (check) {
             return currentOffset;

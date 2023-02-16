@@ -291,21 +291,20 @@ export default class FileDescVisitor extends antlr4.tree.ParseTreeVisitor {
             return;
         }
         const childCommand = ctx.children[0];
-        const command = childCommand.getText();
 
-        switch (command) {
-            case 'find':
+        switch (true) {
+            case childCommand instanceof FindCommandContext:
                 return this.visitFindCommand(childCommand);
-            case 'back':
+            case childCommand instanceof BackCommandContext:
                 return this.visitBackCommand(childCommand);
-            case 'goto':
+            case childCommand instanceof GotoCommandContext:
                 return this.visitGotoCommand(childCommand);
-            case 'next':
+            case childCommand instanceof NextCommandContext:
                 return this.visitNextCommand(childCommand);
-            case 'backFind':
+            case childCommand instanceof BackFindCommandContext:
                 return this.visitBackFindCommand(childCommand);
             default:
-                console.error(`invalid command: ${command}`);
+                console.error(`invalid command: ${childCommand.getText()}`);
                 return;
         }
     }
@@ -404,6 +403,7 @@ export default class FileDescVisitor extends antlr4.tree.ParseTreeVisitor {
         const fileData = await this.file.getFileData();
         const target = isMultiByteValueWithOffset(fileData!, this.file.pointer, multiByteValue);
         if (target === false) {
+            this.file.moveTo(this.file.size);
             return;
         }
         this.file.moveTo(target);
@@ -424,6 +424,7 @@ export default class FileDescVisitor extends antlr4.tree.ParseTreeVisitor {
         const fileData = await this.file.getFileData();
         const target = isMultiByteValueWithOffset(fileData!, this.file.pointer, multiByteValue, -1);
         if (target === false) {
+            this.file.moveTo(0);
             return;
         }
         this.file.moveTo(target);
