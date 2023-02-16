@@ -155,17 +155,25 @@ export class FileData {
     move(offset: number) {
         if (typeof offset === 'number') {
             const position = this.pointer + offset;
-            this.pointer = getNumberInRange(position, 0, this.size);
-            if (this.pointer !== position) {
-                console.warn('range Error');
+            if (this.hasFile()) {
+                this.pointer = getNumberInRange(position, 0, this.size);
+                if (this.pointer !== position) {
+                    console.warn('range Error');
+                }
+            } else {
+                this.pointer = position;
             }
         }
     }
     moveTo(position: number) {
         if (typeof position === 'number') {
-            this.pointer = getNumberInRange(position, 0, this.size);
-            if (this.pointer !== position) {
-                console.warn('range Error');
+            if (this.hasFile()) {
+                this.pointer = getNumberInRange(position, 0, this.size);
+                if (this.pointer !== position) {
+                    console.warn('range Error');
+                }
+            } else {
+                this.pointer = position;
             }
         }
     }
