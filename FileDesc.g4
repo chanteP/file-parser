@@ -28,10 +28,10 @@ whileCommand: WHILE '(' multiByteValue ')';
 ifCommand: IF '(' VAR 'is' multiMatchDataValue ')';
 loopCommand: LOOP '(' numberValue ')';
 
+findCommand: FIND '(' multiByteValue ')';
 backCommand: BACK '(' numberValue ')';
 gotoCommand: GOTO '(' numberValue ')';
 nextCommand: NEXT '(' numberValue ')';
-findCommand: FIND '(' multiByteValue ')';
 backFindCommand: BACKFIND '(' multiByteValue ')';
 
 // basic expression ---------------------------------

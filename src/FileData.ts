@@ -1,4 +1,4 @@
-import { createDefer, reverseArrayBuffer } from './utils';
+import { createDefer, getNumberInRange, reverseArrayBuffer } from './utils';
 
 export interface GroupRecord {
     type: 'group';
@@ -31,7 +31,7 @@ export interface FieldRecord {
 export interface CommandRecord {
     type: 'command';
     name: string;
-    text: string;
+    args: FieldValue[];
 }
 
 type FileRecords = GroupRecord | FieldRecord | CommandRecord;
@@ -52,6 +52,10 @@ export class FileData {
 
     private file?: File;
     private cacheFileData?: ArrayBuffer;
+
+    get size() {
+        return this.file?.size ?? 0;
+    }
 
     ready = createDefer();
 
@@ -142,12 +146,19 @@ export class FileData {
     // pointer operation --------------------------------------------------
     move(offset: number) {
         if (typeof offset === 'number') {
-            this.pointer += offset;
+            const position = this.pointer + offset;
+            this.pointer = getNumberInRange(position, 0, this.size);
+            if (this.pointer !== position) {
+                console.warn('range Error');
+            }
         }
     }
     moveTo(position: number) {
         if (typeof position === 'number') {
-            this.pointer = position;
+            this.pointer = getNumberInRange(position, 0, this.size);
+            if (this.pointer !== position) {
+                console.warn('range Error');
+            }
         }
     }
 }

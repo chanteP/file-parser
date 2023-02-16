@@ -285,13 +285,29 @@ export default class FileDescVisitor extends antlr4.tree.ParseTreeVisitor {
     }
 
     // Visit a parse tree produced by FileDescParser#commandLine.
-    visitCommandLine(ctx: CommandLineContext) {
+    async visitCommandLine(ctx: CommandLineContext) {
         if (this.isCollecting) {
             this.pushChildContext(ctx);
             return;
         }
+        const childCommand = ctx.children[0];
+        const command = childCommand.getText();
 
-        return this.visitChildren(ctx);
+        switch (command) {
+            case 'find':
+                return this.visitFindCommand(childCommand);
+            case 'back':
+                return this.visitBackCommand(childCommand);
+            case 'goto':
+                return this.visitGotoCommand(childCommand);
+            case 'next':
+                return this.visitNextCommand(childCommand);
+            case 'backFind':
+                return this.visitBackFindCommand(childCommand);
+            default:
+                console.error(`invalid command: ${command}`);
+                return;
+        }
     }
 
     // command ----------------------------------------------------------------
@@ -329,7 +345,7 @@ export default class FileDescVisitor extends antlr4.tree.ParseTreeVisitor {
             const [whileMark, lb, expectValue, rb] = this.visitChildren(ctx);
 
             const fileData = await this.file.getFileData();
-            return isMultiByteValueWithOffset(fileData!, this.file.pointer, expectValue);
+            return isMultiByteValueWithOffset(fileData!, this.file.pointer, expectValue) !== false;
         };
 
         while (await condition()) {
@@ -374,27 +390,87 @@ export default class FileDescVisitor extends antlr4.tree.ParseTreeVisitor {
     // ----------------
 
     // Visit a parse tree produced by FileDescParser#findCommand.
-    visitFindCommand(ctx: FindCommandContext) {
-        return this.visitChildren(ctx);
+    async visitFindCommand(ctx: FindCommandContext) {
+        const [name, lb, multiByteValue, rb] = this.visitChildren(ctx);
+        this.file.push({
+            type: 'command',
+            name,
+            args: multiByteValue,
+        });
+
+        if (!this.file.hasFile()) {
+            return;
+        }
+        const fileData = await this.file.getFileData();
+        const target = isMultiByteValueWithOffset(fileData!, this.file.pointer, multiByteValue);
+        if (target === false) {
+            return;
+        }
+        this.file.moveTo(target);
     }
 
     // Visit a parse tree produced by FileDescParser#backFindCommand.
-    visitBackFindCommand(ctx: BackFindCommandContext) {
-        return this.visitChildren(ctx);
+    async visitBackFindCommand(ctx: BackFindCommandContext) {
+        const [name, lb, multiByteValue, rb] = this.visitChildren(ctx);
+        this.file.push({
+            type: 'command',
+            name,
+            args: multiByteValue,
+        });
+
+        if (!this.file.hasFile()) {
+            return;
+        }
+        const fileData = await this.file.getFileData();
+        const target = isMultiByteValueWithOffset(fileData!, this.file.pointer, multiByteValue, -1);
+        if (target === false) {
+            return;
+        }
+        this.file.moveTo(target);
     }
     // Visit a parse tree produced by FileDescParser#backCommand.
-    visitBackCommand(ctx: BackCommandContext) {
-        return this.visitChildren(ctx);
+    async visitBackCommand(ctx: BackCommandContext) {
+        const [name, lb, numberValue, rb] = this.visitChildren(ctx);
+        this.file.push({
+            type: 'command',
+            name,
+            args: [numberValue],
+        });
+
+        if (!this.file.hasFile()) {
+            return;
+        }
+        this.file.move(-numberValue);
     }
 
     // Visit a parse tree produced by FileDescParser#gotoCommand.
-    visitGotoCommand(ctx: GotoCommandContext) {
-        return this.visitChildren(ctx);
+    async visitGotoCommand(ctx: GotoCommandContext) {
+        const [name, lb, numberValue, rb] = this.visitChildren(ctx);
+        this.file.push({
+            type: 'command',
+            name,
+            args: [numberValue],
+        });
+
+        if (!this.file.hasFile()) {
+            return;
+        }
+        this.file.moveTo(numberValue);
     }
 
     // Visit a parse tree produced by FileDescParser#nextCommand.
-    visitNextCommand(ctx: NextCommandContext) {
-        return this.visitChildren(ctx);
+    async visitNextCommand(ctx: NextCommandContext) {
+        const [name, lb, numberValue, rb] = this.visitChildren(ctx);
+        this.file.push({
+            type: 'command',
+            name,
+            args: [numberValue],
+        });
+
+        if (!this.file.hasFile()) {
+            return;
+        }
+        this.file.move(numberValue);
     }
 
     // value expression ----------------------------------------------------------------

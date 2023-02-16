@@ -60,23 +60,33 @@ export function inMultiMatchDataValue(value: any, multiMatchDataValue: (string |
     });
 }
 
-export function isMultiByteValueWithOffset(data: ArrayBuffer, offset: number, multiMatchDataValue: Uint8Array[]) {
+export function isMultiByteValueWithOffset(
+    data: ArrayBuffer,
+    offset: number,
+    multiMatchDataValue: Uint8Array[],
+    direction: 1 | -1 = 1,
+): number | false {
     let i = 0;
     while (true) {
-        if (offset + i > data.byteLength) {
-            return false;
+        const currentOffset = offset + i;
+        if (currentOffset >= data.byteLength || currentOffset < 0) {
+            break;
         }
         const check = multiMatchDataValue.some((matchDataValue) => {
             const length = matchDataValue.length;
-            if (offset + i + length > data.byteLength) {
+            if (currentOffset + length >= data.byteLength) {
                 return false;
             }
-            return isByteValue(data.slice(offset + i, length), matchDataValue);
+            return isByteValue(data.slice(currentOffset, length), matchDataValue);
         });
         if (check) {
-            return true;
+            return currentOffset;
         }
-        i++;
+        i = i + direction;
     }
     return false;
+}
+
+export function getNumberInRange(value: number, min: number, max: number) {
+    return Math.max(Math.min(max, value), min);
 }
