@@ -2,7 +2,14 @@
 // jshint ignore: start
 import antlr4 from 'antlr4';
 
-import { DataOrder, FieldRecord, FieldValue, FileData, GroupRecord } from '../FileData';
+import {
+    DataOrder,
+    defaultDataOrder,
+    type FieldRecord,
+    type FieldValue,
+    type FileData,
+    type GroupRecord,
+} from '../FileData';
 import { SyntaxException } from '../exception';
 import {
     ProgramContext,
@@ -529,7 +536,7 @@ export default class FileDescVisitor extends antlr4.tree.ParseTreeVisitor {
     visitOffsetExpr(ctx: OffsetExprContext): OffsetPatternResult {
         // const { shouldMove, order, offset, length, end };
         const data = this.visitChildren(ctx);
-        let order = DataOrder.LE;
+        let order = defaultDataOrder;
         let shouldMove = true;
         let offset = this.file.pointer;
         let end = 0;

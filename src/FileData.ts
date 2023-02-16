@@ -14,6 +14,7 @@ export enum DataOrder {
     BE = 0,
     LE = 1,
 }
+export const defaultDataOrder = DataOrder.LE;
 
 export interface FieldRecord {
     type: 'field';
@@ -119,12 +120,12 @@ export class FileData {
         this.cacheFileData = await this.file.arrayBuffer();
         return this.cacheFileData;
     }
-    async getData(start: number, end: number, order: DataOrder = DataOrder.LE): Promise<ArrayBuffer | null> {
+    async getData(start: number, end: number, order: DataOrder = defaultDataOrder): Promise<ArrayBuffer | null> {
         if (!this.file) {
             return null;
         }
         const data = await this.file.slice(start, end).arrayBuffer();
-        if (order === DataOrder.BE) {
+        if (order !== defaultDataOrder) {
             return reverseArrayBuffer(data);
         }
         return data;

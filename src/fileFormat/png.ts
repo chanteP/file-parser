@@ -13,7 +13,7 @@ LF, 1
 loop(): #chunk
 length, >4, number
 type, 4, string
-data, \${length}
+data, \${length}, png
 crc, 4
     `,
 };
