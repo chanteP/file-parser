@@ -276,7 +276,7 @@ export default class FileDescVisitor extends antlr4.tree.ParseTreeVisitor {
             fieldData.data = await this.file.getData(Number(fieldData.offset), Number(fieldData.end), fieldData.order);
         }
 
-        const value = this.file.pipeDataFormatter(fieldData.data, formatter);
+        const value = this.file.pipeDataFormatter(fieldData, formatter);
         fieldData.value = value;
 
         this.file.push(fieldData);
@@ -374,13 +374,16 @@ export default class FileDescVisitor extends antlr4.tree.ParseTreeVisitor {
     // Visit a parse tree produced by FileDescParser#loopCommand.
     async visitLoopCommand(ctx: LoopCommandContext, execGroup: GroupCommandFunction) {
         const [loopMark, lb, loopValue, rb] = this.visitChildren(ctx);
-        let loopCount = +loopValue || (this.file.hasFile() ? 0 : 1);
+        let loopCount = this.file.hasFile() ? +loopValue || 0 : 1;
 
         if (loopCount > this.file.maxLoopLimit) {
             console.warn(`<while> reach max loop limit:${this.file.maxLoopLimit}`);
         }
         loopCount = Math.min(this.file.maxLoopLimit, loopCount);
         while (loopCount-- > 0) {
+            if (this.file.isEnd()) {
+                break;
+            }
             const group = await execGroup();
             group.loop = true;
         }

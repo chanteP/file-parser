@@ -34,10 +34,10 @@ export interface CommandRecord {
     args: FieldValue[];
 }
 
-type FileRecords = GroupRecord | FieldRecord | CommandRecord;
+export type FileRecords = GroupRecord | FieldRecord | CommandRecord;
 export type FieldValue = string | number | ArrayBuffer | null | undefined;
 
-export type DataFormatter = (data: FieldValue) => FieldValue;
+export type DataFormatter = (data: FieldValue, field: FieldRecord) => FieldValue;
 
 const dataFormatterMap: Map<string, DataFormatter> = new Map();
 
@@ -97,6 +97,10 @@ export class FileData {
         return !!this.file;
     }
 
+    isEnd() {
+        return this.hasFile() && this.pointer >= this.size;
+    }
+
     setFile(file?: File) {
         this.file = file;
         this.cacheFileData = undefined;
@@ -123,15 +127,15 @@ export class FileData {
         return data;
     }
 
-    pipeDataFormatter(data: ArrayBuffer | null, dataFormatterKeys: string[]): FieldValue {
-        let rs = data;
-        dataFormatterKeys.forEach((key) => {
+    pipeDataFormatter(field: FieldRecord, dataFormatterKeys: string[]): FieldValue {
+        let rs: FieldValue = field.data;
+        (dataFormatterKeys.length ? dataFormatterKeys : ['default']).forEach((key) => {
             const formatter = dataFormatterMap.get(key);
             if (!formatter) {
                 console.warn(`formatter '${key}' lost`);
                 return;
             }
-            rs = formatter(rs);
+            rs = formatter(rs, field);
         });
         return rs;
     }

@@ -1,4 +1,4 @@
-import type { DataFormatter, FieldValue } from '../FileData';
+import { DataFormatter, DataOrder, FieldRecord, FieldValue } from '../FileData';
 
 export function toString(data: FieldValue) {
     if (data instanceof ArrayBuffer) {
@@ -7,15 +7,15 @@ export function toString(data: FieldValue) {
     return data?.toString() ?? '';
 }
 
-export function toNumber(data: FieldValue) {
+export function toNumber(data: FieldValue, field: FieldRecord) {
     if (data instanceof ArrayBuffer) {
         switch (data.byteLength) {
             case 4:
-                return new Uint32Array(data)[0];
+                return new DataView(data).getInt32(0, field.order === DataOrder.LE);
             case 2:
-                return new Uint16Array(data)[0];
+                return new DataView(data).getInt16(0, field.order === DataOrder.LE);
             case 1:
-                return new Uint8Array(data)[0];
+                return new DataView(data).getInt8(0);
             default:
                 console.error('unexpected data length', data);
                 return 0;
@@ -29,5 +29,10 @@ export function toJSON(data: FieldValue) {
         console.warn('expect string input');
         return data;
     }
-    return JSON.stringify(JSON.parse(data), null, 4);
+    try {
+        return JSON.stringify(JSON.parse(data), null, 4);
+    } catch (e) {
+        console.warn('toJSON error', e);
+        return data;
+    }
 }

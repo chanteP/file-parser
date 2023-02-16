@@ -1,5 +1,6 @@
 .temp
 .antlr
+.DS_Store
 
 # Logs
 logs
