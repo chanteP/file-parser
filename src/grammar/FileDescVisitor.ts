@@ -28,7 +28,6 @@ import {
     NumberValueContext,
     ByteValueContext,
     VarExprContext,
-    TextValueContext,
     StringValueContext,
     CalcExprContext,
 } from './FileDescParser';
@@ -201,9 +200,11 @@ export default class FileDescVisitor extends antlr4.tree.ParseTreeVisitor {
         const protoChildren = ctx.children;
         const children =
             protoChildren[0] instanceof GroupCommandExprContext ? [...protoChildren] : [undefined, ...protoChildren];
-        const [command, markData, nameData] = children;
+        const [command, nameData] = children;
 
-        const level = markData.getText().length;
+        const [match, mark, name] = /(#+)(.*)/.exec(nameData.getText()) ?? [];
+
+        const level = mark!.length;
 
         if (this.isCollecting) {
             this.addScope(ctx, level);
@@ -214,7 +215,7 @@ export default class FileDescVisitor extends antlr4.tree.ParseTreeVisitor {
             const groupData: GroupRecord = {
                 type: 'group',
                 level,
-                name: nameData.getText() ?? '',
+                name: name ?? '',
                 content: [],
             };
             // 得先push再操作command。command依赖group栈处理
@@ -468,9 +469,9 @@ export default class FileDescVisitor extends antlr4.tree.ParseTreeVisitor {
     }
 
     // Visit a parse tree produced by FileDescParser#textValue.
-    visitTextValue(ctx: TextValueContext) {
-        return this.visitChildren(ctx).join(' ');
-    }
+    // visitTextValue(ctx: TextValueContext) {
+    //     return this.visitChildren(ctx).join(' ');
+    // }
 
     // Visit a parse tree produced by FileDescParser#stringValue.
     visitStringValue(ctx: StringValueContext) {

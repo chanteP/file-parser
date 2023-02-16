@@ -10,7 +10,7 @@ fileData: line (NEWLINE line)*;
 
 line: fieldLine | commandLine | groupLine;
 
-groupLine: groupCommandExpr? GROUP_MARK textValue?;
+groupLine: groupCommandExpr? GROUP_TITLE;
 fieldLine:
 	VAR PART_SPLIT offsetExpr (PART_SPLIT dataFormatExpr)?;
 
@@ -47,7 +47,7 @@ offsetExpr: ('>' | '<')? (
 dataFormatExpr: VAR ('|' VAR)*;
 
 // basic value ---------------------------------
-textValue: (varExpr | VAR | number | string)+;
+// textValue: (varExpr | VAR | number | string)+;
 stringValue: (varExpr | VAR)+;
 numberValue: varExpr | number;
 byteValue: varExpr | byteData;
@@ -95,7 +95,8 @@ PLUS: '+';
 MINUS: '-';
 
 PART_SPLIT: ',';
-GROUP_MARK: GROUP_SYMBOL+;
+// GROUP_MARK: GROUP_SYMBOL+;
+GROUP_TITLE: GROUP_SYMBOL+ ~[\r\n]*;
 
 NEWLINE: ('\r'? '\n' | '\r')+;
 

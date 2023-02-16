@@ -18,6 +18,10 @@ export function isOddFilter(data: any, index: number): boolean {
     return !(index % 2);
 }
 
+export function reverseArrayBuffer(data: ArrayBuffer) {
+    return data;
+}
+
 export function isByteValue(value: any, matchDataValue: Uint8Array): boolean {
     if (!(value instanceof ArrayBuffer && matchDataValue instanceof Uint8Array)) {
         return false;
