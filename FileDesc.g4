@@ -17,19 +17,29 @@ fieldLine:
 	)?;
 
 commandLine:
-	backCommand
+	endifCommand
+	| backCommand
 	| nextCommand
 	| gotoCommand
 	| findCommand
 	| backFindCommand;
 
-scopeCommandExpr: (whileCommand | ifCommand | loopCommand) ':';
+scopeCommandExpr: (
+		whileCommand
+		| ifCommand
+		| elseIfCommand
+		| elseCommand
+		| loopCommand
+	) ':';
 
 // command ---------------------------------
 whileCommand: WHILE '(' multiByteValue ')';
-ifCommand: IF '(' VAR 'is' multiMatchDataValue ')';
+ifCommand: IF '(' VAR IF_ASSERT multiMatchDataValue ')';
+elseIfCommand: ELSEIF '(' VAR IF_ASSERT multiMatchDataValue ')';
+elseCommand: ELSE;
 loopCommand: LOOP '(' numberValue? ')';
 
+endifCommand: ENDIF;
 findCommand: FIND '(' multiByteValue ')';
 backCommand: BACK '(' numberValue ')';
 gotoCommand: GOTO '(' numberValue ')';
@@ -81,6 +91,9 @@ LINE_COMMENT: '//' ~[\r\n]* -> channel(HIDDEN);
 
 // command --------------------
 IF: 'if';
+ELSEIF: 'elseif';
+ELSE: 'else';
+ENDIF: 'endif';
 LOOP: 'loop';
 WHILE: 'while';
 FIND: 'find';
@@ -95,6 +108,7 @@ SLASH: '/';
 PLUS: '+';
 MINUS: '-';
 
+IF_ASSERT: 'is';
 PART_SPLIT: ',';
 // GROUP_MARK: GROUP_SYMBOL+;
 GROUP_TITLE: GROUP_SYMBOL+ ~[\r\n]*;
